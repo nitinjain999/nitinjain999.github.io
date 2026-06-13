@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KEDA Demo — Nitin Jain</title>
+<style>
+  :root {
+    --rust:      #CE422B;
+    --rust-dim:  #9e3220;
+    --rust-glow: #e8613e;
+    --bg:        #0d0d0d;
+    --bg2:       #141414;
+    --bg3:       #1c1c1c;
+    --border:    #2a2a2a;
+    --text:      #e8e6e3;
+    --muted:     #888;
+    --green:     #4caf87;
+    --yellow:    #d4a843;
+    --blue:      #5b8fd4;
+    --purple:    #9b7fd4;
+    --mono:      'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --sans:      'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow: hidden;
+  }
+
+  /* ── DECK ── */
+  #deck-wrap {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+  }
+  #deck {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    font-size: clamp(11px, 1.05vw, 17px);
+  }
+
+  /* ── PPT HEADER BAR ── */
+  #ppt-header {
+    height: 3.6em;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 2.4em;
+    gap: 1em;
+    flex-shrink: 0;
+    font-size: clamp(11px, 1.05vw, 17px);
+    z-index: 50;
+  }
+  #ppt-header-accent {
+    width: 3px; height: 1.4em;
+    background: var(--rust); border-radius: 2px; flex-shrink: 0;
+  }
+  #ppt-slide-title {
+    font-size: 1em; font-weight: 600;
+    color: var(--text); flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #ppt-section-tag {
+    font-family: var(--mono); font-size: .72em;
+    color: var(--muted); letter-spacing: .1em; text-transform: uppercase;
+  }
+
+  /* ── PPT FOOTER BAR ── */
+  #ppt-footer {
+    height: 3em;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 2.4em;
+    flex-shrink: 0;
+    font-size: clamp(11px, 1.05vw, 17px);
+  }
+  #ppt-author {
+    font-family: var(--mono); font-size: .75em;
+    color: var(--muted); flex: 1;
+  }
+  #ppt-nav {
+    display: flex; align-items: center; gap: .6em;
+  }
+  #ppt-nav button {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); width: 2em; height: 2em;
+    border-radius: 4px; cursor: pointer; font-size: .85em;
+    transition: all .15s; display: flex; align-items: center; justify-content: center;
+  }
+  #ppt-nav button:hover { border-color: var(--rust); color: var(--rust); }
+  #ppt-nav button:disabled { opacity: .25; cursor: default; }
+  #ppt-counter {
+    font-family: var(--mono); font-size: .75em; color: var(--muted);
+    min-width: 4em; text-align: center;
+  }
+  #ppt-fs {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); font-size: .72em; font-family: var(--mono);
+    padding: .3em .8em; border-radius: 4px; cursor: pointer;
+    margin-left: 1.2em; transition: all .15s;
+  }
+  #ppt-fs:hover { border-color: var(--rust); color: var(--rust); }
+  #ppt-toc {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); font-size: .72em; font-family: var(--mono);
+    padding: .3em .8em; border-radius: 4px; cursor: pointer;
+    margin-left: .5em; transition: all .15s;
+  }
+  #ppt-toc:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* ── SLIDES ── */
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    padding: 2.4em 3.4em 2em;
+    overflow: hidden;
+    background: var(--bg); /* opaque — prevents bleed-through */
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* Cols fill remaining height */
+  .cols-2, .cols-3 {
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+  }
+  .cols-2 > *, .cols-3 > * {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: .6em;
+  }
+  /* Every column child stretches to share remaining space equally */
+  .cols-2 > * > *,
+  .cols-3 > * > * {
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* pre fills its column */
+  pre {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  /* ── PROGRESS ── */
+  #progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px;
+    background: transparent; z-index: 800;
+  }
+  #progress-bar {
+    height: 100%; background: var(--rust);
+    transition: width .35s ease;
+    box-shadow: 0 0 8px rgba(206,66,43,.6);
+  }
+
+  #toc-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 700;
+    align-items: center; justify-content: center;
+  }
+  #toc-overlay.open { display: flex; }
+  #toc-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    min-width: 380px;
+    max-width: 560px;
+  }
+  #toc-box h3 { font-family: var(--mono); font-size: 13px; color: var(--rust); margin-bottom: 20px; letter-spacing: .08em; text-transform: uppercase; }
+  .toc-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 7px;
+    cursor: pointer; transition: background .12s;
+    font-size: 14px;
+  }
+  .toc-item:hover { background: var(--bg3); }
+  .toc-num { font-family: var(--mono); font-size: 11px; color: var(--rust); min-width: 28px; }
+  #toc-close { margin-top: 20px; background: none; border: 1px solid var(--border); color: var(--muted); padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%; }
+  #toc-close:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* ── TYPOGRAPHY — all relative to #deck font-size (1.1vw) ── */
+  .slide-tag {
+    font-family: var(--mono); font-size: .72em;
+    color: var(--rust); letter-spacing: .12em;
+    text-transform: uppercase; margin-bottom: .4em;
+    flex-shrink: 0;
+  }
+  h1 {
+    font-size: 2.6em;
+    font-weight: 700; line-height: 1.12;
+    margin-bottom: .35em; flex-shrink: 0;
+  }
+  h2 {
+    font-size: 1.7em;
+    font-weight: 600; line-height: 1.2;
+    margin-bottom: .5em; flex-shrink: 0;
+  }
+  h3 {
+    font-size: 1em; font-weight: 600;
+    margin-bottom: .5em; color: var(--text); flex-shrink: 0;
+  }
+  .subtitle {
+    font-size: 1.1em;
+    color: var(--muted); line-height: 1.6;
+    max-width: 60ch; margin-bottom: 1.4em; flex-shrink: 0;
+  }
+  p { line-height: 1.7; color: #c8c6c3; margin-bottom: .6em; font-size: .9em; }
+
+  /* ── ACCENT ── */
+  .hl   { color: var(--rust); }
+  .hl-g { color: var(--green); }
+  .hl-y { color: var(--yellow); }
+  .hl-b { color: var(--blue); }
+  .hl-p { color: var(--purple); }
+
+  /* ── GRID / LAYOUT ── */
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; }
+  .cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1em; }
+  .mt { margin-top: 1.2em; }
+  .mb { margin-bottom: 1em; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .8em 1.1em;
+    font-size: .88em;
+    overflow: hidden;
+  }
+  .card.accent { border-color: var(--rust); }
+  .card.green  { border-color: var(--green); }
+  .card.blue   { border-color: var(--blue); }
+  .card.yellow { border-color: var(--yellow); }
+  .card.purple { border-color: var(--purple); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono); font-size: .72em;
+    padding: .2em .6em; border-radius: 4px;
+    background: rgba(206,66,43,.15);
+    color: var(--rust); border: 1px solid rgba(206,66,43,.35);
+    margin-bottom: .5em;
+  }
+  .badge.g { background: rgba(76,175,135,.12); color: var(--green); border-color: rgba(76,175,135,.35); }
+  .badge.b { background: rgba(91,143,212,.12); color: var(--blue); border-color: rgba(91,143,212,.35); }
+  .badge.y { background: rgba(212,168,67,.12); color: var(--yellow); border-color: rgba(212,168,67,.35); }
+  .badge.p { background: rgba(155,127,212,.12); color: var(--purple); border-color: rgba(155,127,212,.35); }
+
+  /* ── CODE ── */
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .9em 1.2em;
+    font-family: var(--mono); font-size: .78em;
+    line-height: 1.6;
+    tab-size: 2;
+  }
+  pre .k  { color: var(--blue); }
+  pre .v  { color: var(--green); }
+  pre .c  { color: #555; font-style: italic; }
+  pre .n  { color: var(--rust); }
+  pre .t  { color: var(--yellow); }
+  pre .p  { color: var(--purple); }
+
+  code {
+    font-family: var(--mono); font-size: .88em;
+    background: var(--bg3); padding: .15em .45em;
+    border-radius: 4px; color: var(--green);
+  }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ── LIST ── */
+  ul { list-style: none; padding: 0; font-size: .88em; }
+  ul li { padding: .3em 0; padding-left: 1.4em; position: relative; line-height: 1.55; }
+  ul li::before { content: '▸'; position: absolute; left: 0; color: var(--rust); }
+
+  ol { padding-left: 1.4em; font-size: .88em; }
+  ol li { padding: .3em 0; line-height: 1.55; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: .85em; }
+  .slide.active > table { flex: 1; min-height: 0; }
+  th {
+    text-align: left; padding: .5em .9em;
+    background: var(--bg3); font-family: var(--mono);
+    font-size: .75em; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: .5em .9em; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex; align-items: center; gap: 0;
+    flex-wrap: wrap; flex-shrink: 0;
+    font-family: var(--mono); font-size: .82em;
+  }
+  .flow-box {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: .55em .9em;
+    text-align: center; min-width: 7em;
+  }
+  .flow-arrow {
+    color: var(--rust); padding: 0 .4em; font-size: 1.1em;
+    line-height: 1;
+  }
+
+  /* ── FORMULA BOX ── */
+  .formula {
+    background: rgba(206,66,43,.08);
+    border: 1px solid rgba(206,66,43,.3);
+    border-radius: 8px; padding: .8em 1.4em;
+    font-family: var(--mono); font-size: .95em;
+    text-align: center; margin: .7em 0;
+    letter-spacing: .02em; flex-shrink: 0;
+  }
+
+  /* ── TITLE SLIDE DECORATION ── */
+  .rust-line {
+    width: 4em; height: 4px;
+    background: var(--rust); border-radius: 2px;
+    margin-bottom: 1.2em; flex-shrink: 0;
+  }
+
+  /* ── SECTION DIVIDER SLIDE ── */
+  .section-slide {
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .section-num {
+    font-family: var(--mono); font-size: 6em; font-weight: 700;
+    color: rgba(206,66,43,.15); line-height: 1;
+    margin-bottom: -.3em;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid var(--rust);
+    background: rgba(206,66,43,.06);
+    padding: .6em 1em; border-radius: 0 6px 6px 0;
+    margin: .6em 0; font-size: .88em; flex-shrink: 0;
+  }
+  .callout.green  { border-color: var(--green);  background: rgba(76,175,135,.06); }
+  .callout.yellow { border-color: var(--yellow); background: rgba(212,168,67,.06); }
+  .callout.blue   { border-color: var(--blue);   background: rgba(91,143,212,.06); }
+
+  /* ── CHECK LIST ── */
+  .checklist li { padding-left: 28px; }
+  .checklist li::before { content: '✓'; color: var(--green); }
+  .checklist li.warn::before { content: '⚠'; color: var(--yellow); }
+  .checklist li.bad::before  { content: '✗'; color: var(--rust); }
+
+  /* keyboard hint */
+  .hint { font-family: var(--mono); font-size: .68em; color: #444; flex-shrink: 0; }
+  #title-hint { font-family: var(--mono); font-size: .68em; color: #333; text-align: right; }
+
+  /* ── SCALER ICON HEADER ── */
+  .scaler-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .scaler-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+
+  /* ── SLIDE TRANSITIONS ── */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .slide.active {
+    animation: slideIn .42s cubic-bezier(.22,.68,0,1.2) both;
+  }
+
+  /* Staggered children on active slide */
+  .slide.active > *,
+  .slide.active .cols-2 > *,
+  .slide.active .cols-3 > * {
+    animation: fadeIn .5s ease both;
+  }
+  .slide.active > *:nth-child(1) { animation-delay: .05s; }
+  .slide.active > *:nth-child(2) { animation-delay: .12s; }
+  .slide.active > *:nth-child(3) { animation-delay: .19s; }
+  .slide.active > *:nth-child(4) { animation-delay: .26s; }
+  .slide.active > *:nth-child(5) { animation-delay: .33s; }
+  .slide.active .cols-2 > *:nth-child(1) { animation-delay: .2s; }
+  .slide.active .cols-2 > *:nth-child(2) { animation-delay: .32s; }
+  .slide.active .cols-3 > *:nth-child(1) { animation-delay: .2s; }
+  .slide.active .cols-3 > *:nth-child(2) { animation-delay: .3s; }
+  .slide.active .cols-3 > *:nth-child(3) { animation-delay: .4s; }
+
+  /* ── TITLE SLIDE SPECIFIC ── */
+  #title-tag    { animation: fadeIn .6s .1s both; }
+  #title-name   { animation: slideIn .7s .35s cubic-bezier(.22,.68,0,1.2) both; }
+  #title-keda   { animation: slideIn .7s .18s cubic-bezier(.22,.68,0,1.2) both; }
+  #title-sub    { animation: fadeIn .7s .5s both; }
+  #title-cards  { animation: fadeIn .8s .65s both; }
+  #title-hint   { animation: fadeIn .8s .9s both; }
+  #title-left   { animation: slideIn .6s .05s cubic-bezier(.22,.68,0,1.2) both; }
+
+  /* Pulsing glow on rust-line for title */
+  @keyframes lineGrow {
+    from { width: 0; opacity: 0; }
+    to   { width: 64px; opacity: 1; }
+  }
+  #title-line {
+    animation: lineGrow .6s .05s cubic-bezier(.22,.68,0,1.2) both;
+  }
+
+  /* Floating card animation for title scalers */
+  @keyframes floatCard {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+  #card-cron   { animation: floatCard 3.2s 1s ease-in-out infinite; }
+  #card-prom   { animation: floatCard 3.2s 1.4s ease-in-out infinite; }
+  #card-dt     { animation: floatCard 3.2s 1.8s ease-in-out infinite; }
+
+  /* Subtle background grid — covers real viewport, behind scaled deck */
+  #bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(206,66,43,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(206,66,43,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    animation: fadeIn 2s .5s both;
+  }
+
+  /* deck-wrap sits above bg-grid */
+  #deck-wrap { z-index: 1; }
+
+  /* Animated progress bar glow */
+  #progress-bar {
+    box-shadow: 0 0 8px rgba(206,66,43,.6);
+  }
+
+  /* Section number pulse */
+  @keyframes sectionPulse {
+    0%,100% { opacity: .15; }
+    50%      { opacity: .28; }
+  }
+  .section-num { animation: sectionPulse 3s ease-in-out infinite; }
+
+  /* Card hover lift */
+  .card {
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  }
+
+  /* Flow box hover */
+  .flow-box {
+    transition: border-color .2s, background .2s;
+  }
+  .flow-box:hover {
+    border-color: var(--rust);
+    background: rgba(206,66,43,.06);
+  }
+
+  /* Blinking cursor on KEDA title */
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  #cursor { animation: blink 1s step-end infinite; color: var(--rust); }
+
+  /* ── TITLE SLIDE — PPT cover style ── */
+
+  /* Left rust stripe (PPT cover accent bar) */
+  #title-stripe {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: .5em;
+    background: var(--rust);
+  }
+
+  /* Full-slide flex column, padded away from stripe */
+  .slide[data-title="Title"] {
+    padding: 3.5em 4em 3em 5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg);
+  }
+
+  /* Top content: eyebrow + big KEDA + subtitle + cards */
+  #title-left {
+    display: flex; flex-direction: column;
+    gap: 1.2em;
+    flex: 1; min-height: 0;
+    justify-content: center;
+    max-width: 70%;
+  }
+
+  #title-eyebrow {
+    font-family: var(--mono);
+    font-size: .8em;
+    color: var(--rust);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  #title-keda {
+    font-size: 7.5em;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+
+  #title-sub {
+    font-size: 1em;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* Scaler cards row */
+  #title-cards {
+    display: flex; gap: 1em; flex-shrink: 0; margin-top: .4em;
+  }
+  .title-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .9em 1.4em;
+    display: flex; align-items: center; gap: .7em;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .title-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+  .title-card-rust   { border-color: var(--rust); }
+  .title-card-blue   { border-color: var(--blue); }
+  .title-card-purple { border-color: var(--purple); }
+  .tc-icon  { font-size: 1.5em; }
+  .tc-label { font-family: var(--mono); font-size: .72em; letter-spacing: .1em; font-weight: 700; }
+  .tc-desc  { font-size: .72em; color: #555; }
+
+  /* Author block — bottom right */
+  #title-author-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    gap: .3em;
+  }
+
+  /* ── AUTHOR NAME — bottom right of title slide ── */
+  @keyframes authorReveal {
+    0%   { opacity: 0; transform: translateY(40px) skewY(4deg); }
+    60%  { opacity: 1; transform: translateY(-6px) skewY(-1deg); }
+    100% { opacity: 1; transform: translateY(0) skewY(0); }
+  }
+  @keyframes authorGlow {
+    0%,100% { text-shadow: 0 0 0px transparent; }
+    50%     { text-shadow: 0 0 40px rgba(206,66,43,.45), 0 0 80px rgba(206,66,43,.18); }
+  }
+  @keyframes authorUnderline {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+  @keyframes underlineBlink {
+    0%,49% { opacity: 1; }
+    50%,100% { opacity: 0; }
+  }
+  #title-author {
+    font-family: var(--sans);
+    font-size: 2.8em;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1;
+    color: var(--text);
+    text-align: right;
+    animation: authorReveal .9s 1.1s cubic-bezier(.22,.68,0,1.2) both,
+               authorGlow 3.5s 2.2s ease-in-out infinite;
+  }
+  #title-author::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background: var(--rust);
+    border-radius: 2px;
+    margin-top: .18em;
+    transform-origin: right;
+    animation: authorUnderline .6s 1.9s cubic-bezier(.22,.68,0,1.2) both,
+               underlineBlink .9s 2.6s step-end infinite;
+  }
+</style>
+</head>
+<body>
+
+<div id="bg-grid"></div>
+<div id="progress"><div id="progress-bar"></div></div>
+
+<div id="toc-overlay">
+  <div id="toc-box">
+    <h3>Jump to slide</h3>
+    <div id="toc-list"></div>
+    <button id="toc-close">close</button>
+  </div>
+</div>
+
+<div id="deck-wrap">
+
+  <!-- PPT HEADER -->
+  <div id="ppt-header">
+    <div id="ppt-header-accent"></div>
+    <div id="ppt-slide-title">KEDA Demo</div>
+    <div id="ppt-section-tag"></div>
+  </div>
+
+  <!-- SLIDE CANVAS -->
+  <div id="deck">
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 0 — TITLE
+══════════════════════════════════════════════ -->
+<div class="slide active" data-title="Title">
+
+  <!-- Vertical rust stripe — PPT cover accent -->
+  <div id="title-stripe"></div>
+
+  <!-- Left content column -->
+  <div id="title-left">
+    <div id="title-eyebrow">Kubernetes Event-Driven Autoscaling</div>
+
+    <div id="title-keda">KEDA<span id="cursor">_</span></div>
+
+    <p id="title-sub">
+      Scale beyond CPU — queues, metrics, observability signals,<br>
+      and time-based schedules.
+    </p>
+
+    <div id="title-cards">
+      <div id="card-cron"  class="title-card title-card-rust">
+        <span class="tc-icon">⏰</span>
+        <span class="tc-label" style="color:var(--rust);">CRON</span>
+        <span class="tc-desc">Business hours</span>
+      </div>
+      <div id="card-prom" class="title-card title-card-blue">
+        <span class="tc-icon">📈</span>
+        <span class="tc-label" style="color:var(--blue);">PROMETHEUS</span>
+        <span class="tc-desc">Metrics &amp; PromQL</span>
+      </div>
+      <div id="card-dt"   class="title-card title-card-purple">
+        <span class="tc-icon">🔭</span>
+        <span class="tc-label" style="color:var(--purple);">DYNATRACE</span>
+        <span class="tc-desc">Observability</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Author block — bottom right -->
+  <div id="title-author-block">
+    <div id="title-author">Nitin Jain</div>
+    <p id="title-hint">← → arrow keys &nbsp;·&nbsp; F fullscreen &nbsp;·&nbsp; ☰ slides</p>
+  </div>
+
+</div>
+
+<!-- ══════ SLIDE 02 — AGENDA ══════ -->
+<div class="slide" data-title="Agenda">
+  <div class="slide-tag">Overview</div>
+  <h2>What we'll cover today</h2>
+  <div class="cols-2" style="flex:1;gap:.8em;">
+    <div>
+      <div class="card" style="margin-bottom:.8em;">
+        <div class="badge">01</div>
+        <h3>What is KEDA?</h3>
+        <p>Why Kubernetes built-in autoscaling isn't enough, and how KEDA extends it without replacing anything.</p>
+        <ul><li>HPA only knows CPU &amp; Memory</li><li>KEDA adds 77 external event sources</li><li>Two-phase scaling: 0↔1 (KEDA) + 1↔N (HPA)</li></ul>
+      </div>
+      <div class="card accent" style="margin-bottom:.8em;">
+        <div class="badge">02</div>
+        <h3>Cron Scaler</h3>
+        <p>Scale by the clock. Pre-warm before business hours, go to zero overnight.</p>
+        <ul><li>Named timezone support (no UTC surprises)</li><li>Sets a replica <em>floor</em> — never limits scale-up</li></ul>
+      </div>
+      <div class="card blue">
+        <div class="badge b">03</div>
+        <h3>Prometheus Scaler</h3>
+        <p>Scale on any PromQL metric — connections, request rate, queue depth, latency.</p>
+        <ul><li>Works with AWS AMP, self-hosted, any Prometheus endpoint</li><li>activationThreshold filters idle noise</li></ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple" style="margin-bottom:.8em;">
+        <div class="badge p">04</div>
+        <h3>Dynatrace Scaler</h3>
+        <p>Scale on what Dynatrace actually observes — Metrics v2 selectors with filters, aggregations, and time windows.</p>
+        <ul><li>from: "now-2m" is critical — default 2h window dilutes spikes</li><li>Requires live.dynatrace.com, not apps domain</li></ul>
+      </div>
+      <div class="card green" style="margin-bottom:.8em;">
+        <div class="badge g">05</div>
+        <h3>Live ScaledObject — Full YAML</h3>
+        <p>Walk through the actual production config line by line — all three triggers, every field annotated.</p>
+        <ul><li>Cron + Prometheus + Dynatrace on one workload</li><li>OR semantics: KEDA picks the maximum</li></ul>
+      </div>
+      <div class="card yellow">
+        <div class="badge y">06</div>
+        <h3>Developer Responsibilities</h3>
+        <p>What you own: signal choice, replica guardrails, downstream capacity, graceful shutdown.</p>
+        <ul><li>CPU is a lagging indicator — scale ahead of the slowdown</li><li>max replicas × conns/pod must fit your database</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 03 — WHAT IS KEDA ══════ -->
+<div class="slide" data-title="What is KEDA?">
+  <div class="slide-tag">Introduction</div>
+  <h2>What is KEDA?</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="callout" style="margin-bottom:.7em;">
+        <strong>Autoscaling</strong> = Kubernetes automatically adds or removes running copies (pods) of your app. More traffic → more pods. Less traffic → fewer pods. You pay for what you actually use.
+      </div>
+      <div class="card accent" style="margin-bottom:.7em;">
+        <div class="badge">The problem with built-in HPA</div>
+        <p>The standard Kubernetes autoscaler (HPA) only understands <strong>CPU and Memory</strong>. These are <em>lagging indicators</em> — your users feel the slowdown before Kubernetes acts.</p>
+        <ul>
+          <li>10,000 messages in a queue? HPA has no idea</li>
+          <li>Response time at 3 seconds? HPA doesn't see it</li>
+          <li>03:00 with zero users? Still running 5 pods, still paying</li>
+          <li>Want to scale to zero? HPA minimum is 1</li>
+        </ul>
+      </div>
+      <div class="card green">
+        <div class="badge g">KEDA fills the gap</div>
+        <p><strong>KEDA</strong> (Kubernetes Event-Driven Autoscaling) was created by Microsoft and Red Hat. It connects Kubernetes to <strong>77 external event sources</strong> and lets your app scale on the signal that actually reflects real demand.</p>
+        <p style="margin-top:.5em;">KEDA is <strong>non-destructive</strong> — it doesn't replace the HPA or any Kubernetes component. It sits alongside them and feeds them better data.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card blue" style="margin-bottom:.7em;">
+        <div class="badge b">Three components inside your cluster</div>
+        <table>
+          <thead><tr><th>Component</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>keda-operator</code></td><td>Watches ScaledObjects, owns the 0 ↔ 1 scaling step, manages HPA lifecycle</td></tr>
+            <tr><td><code>keda-metrics-apiserver</code></td><td>Exposes external metric values to the HPA — bridges external world to Kubernetes</td></tr>
+            <tr><td><code>keda-admission-webhooks</code></td><td>Validates config at apply time — catches mistakes before they cause runtime failures</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="margin-bottom:.7em;">
+        <div class="badge">Two-phase scaling lifecycle</div>
+        <p><strong>Phase 1 — 0 to 1:</strong> <code>keda-operator</code> handles this directly. When events arrive and there are zero pods, KEDA brings the first pod up.</p>
+        <p style="margin-top:.4em;"><strong>Phase 2 — 1 to N:</strong> The HPA takes over, using metrics provided by <code>keda-metrics-apiserver</code> to drive replica count up or down.</p>
+        <p style="margin-top:.4em;"><strong>Scale to zero:</strong> Only KEDA can do this. The HPA's minimum is 1. KEDA's <code>keda-operator</code> handles the final 1 → 0 step when all triggers go idle.</p>
+      </div>
+      <div class="callout green">
+        <strong>77 built-in scalers</strong> covering Kafka, SQS, RabbitMQ, Prometheus, Datadog, Dynatrace, Redis, PostgreSQL, Cron, GitHub Actions, and many more. Plus a gRPC interface to write your own.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 04 — HPA VS KEDA ══════ -->
+<div class="slide" data-title="HPA vs KEDA">
+  <div class="slide-tag">Introduction</div>
+  <h2>HPA vs KEDA — what actually changes</h2>
+  <div class="callout blue" style="margin-bottom:.6em;flex-shrink:0;">
+    <strong>HPA</strong> (Horizontal Pod Autoscaler) is built into Kubernetes. <strong>KEDA extends it</strong> — you keep the HPA, you just give it more signals to act on. Selectively applied: only workloads with a ScaledObject are affected.
+  </div>
+  <table style="flex:1;">
+    <thead><tr><th>Capability</th><th>HPA alone</th><th>HPA + KEDA</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Scaling signals</strong></td>
+        <td>CPU utilisation, Memory usage</td>
+        <td><span class="hl-g">77 built-in scalers</span> — queues, streams, metrics, DBs, time, HTTP…</td>
+      </tr>
+      <tr>
+        <td><strong>Scale to zero pods</strong></td>
+        <td><span class="hl">✗ minimum is 1 pod</span> — you always pay</td>
+        <td><span class="hl-g">✓ minReplicaCount: 0</span> — zero pods when idle, wakes on first event</td>
+      </tr>
+      <tr>
+        <td><strong>Noise filtering</strong></td>
+        <td>Reacts to every metric fluctuation including idle noise</td>
+        <td><span class="hl-g">activationThreshold</span> — trigger only activates above a meaningful signal level</td>
+      </tr>
+      <tr>
+        <td><strong>Credential security</strong></td>
+        <td>N/A</td>
+        <td><span class="hl-g">TriggerAuthentication</span> — credentials in Secrets, never inline in YAML</td>
+      </tr>
+      <tr>
+        <td><strong>Multiple signals at once</strong></td>
+        <td>One metric source per HPA object</td>
+        <td><span class="hl-g">Multiple triggers, OR logic</span> — KEDA picks the highest replica count of all active triggers</td>
+      </tr>
+      <tr>
+        <td><strong>Metric validation at deploy</strong></td>
+        <td>Fails at runtime if metric is wrong</td>
+        <td><span class="hl-g">Admission webhooks</span> catch misconfiguration at <code>kubectl apply</code> time</td>
+      </tr>
+      <tr>
+        <td><strong>Scaling formula</strong></td>
+        <td>ceil( metric / target ) — hardcoded</td>
+        <td>Same formula, plus optional <span class="hl-g">scalingModifiers</span> for composite multi-trigger math</td>
+      </tr>
+      <tr>
+        <td><strong>Best for</strong></td>
+        <td>CPU-bound compute workloads</td>
+        <td>Queue workers, event-driven APIs, batch jobs, cost-optimised services</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════ SLIDE 05 — CRON SCALER ══════ -->
+<div class="slide" data-title="Cron Scaler">
+  <div class="slide-tag">Cron Scaler</div>
+  <h2>Cron Scaler — scale by the clock</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="callout" style="margin-bottom:.7em;">
+        <strong>Cron</strong> is a time-based scheduler — like a calendar alarm for your app. The KEDA cron trigger lets you define exactly when replicas should go up and when they should come back down.
+      </div>
+      <div class="card" style="margin-bottom:.7em;">
+        <div class="badge y">Real-world use cases</div>
+        <ul>
+          <li><strong>Pre-warm before office hours:</strong> start pods at 08:45 so the first employee at 09:00 hits a warm app, not a cold start</li>
+          <li><strong>Save cost overnight:</strong> scale to zero after 18:00, bring back at 08:45 — pay nothing for 15 hours</li>
+          <li><strong>Weekend minimum:</strong> keep 1 pod on weekends for health checks, scale to 5 on Monday 08:00</li>
+          <li><strong>Combine with metric triggers:</strong> cron sets the minimum floor, Prometheus or Dynatrace drives the actual count during business hours</li>
+        </ul>
+      </div>
+      <div class="callout yellow" style="margin-bottom:.5em;">
+        <strong>Cron sets a floor, never a ceiling.</strong> If Prometheus wants 8 replicas and cron wants 2, KEDA picks <strong>8</strong>. The cron trigger never prevents scale-up.
+      </div>
+      <div class="callout">
+        <strong>Always set timezone by name</strong> (e.g., <code>Europe/Stockholm</code>), not as a UTC offset. Named timezones automatically handle daylight saving time. Without a timezone, cron defaults to UTC — your 09:00 schedule fires at the wrong local time.
+      </div>
+    </div>
+    <div>
+      <pre style="height:100%;">
+<span class="p">-</span> <span class="k">type:</span> <span class="v">cron</span>
+  <span class="k">metadata:</span>
+    <span class="k">timezone:</span> <span class="v">"Europe/Stockholm"</span>
+    <span class="c"># ↑ Named timezone — handles daylight saving
+    #   automatically. Always required.
+    #   Examples: "UTC", "America/New_York",
+    #             "Asia/Kolkata", "Europe/Berlin"</span>
+
+    <span class="k">start:</span> <span class="v">"0 9 * * 1-5"</span>
+    <span class="c"># ↑ Standard 5-field cron expression:
+    #   minute  hour  day  month  weekday
+    #       0     9    *     *    1-5
+    #   = 09:00, every Monday–Friday
+    #   Trigger becomes ACTIVE at this time.</span>
+
+    <span class="k">end:</span> <span class="v">"0 18 * * 1-5"</span>
+    <span class="c"># ↑ 18:00, Monday–Friday.
+    #   Trigger becomes INACTIVE.
+    #   If this is the last active trigger,
+    #   cooldownPeriod begins and replicas
+    #   fall back to minReplicaCount.</span>
+
+    <span class="k">desiredReplicas:</span> <span class="v">"2"</span>
+    <span class="c"># ↑ While active: ensure at least 2 replicas.
+    #   This is a FLOOR, not a ceiling.
+    #   A Prometheus trigger seeing heavy traffic
+    #   can still push this to 10 — cron won't
+    #   limit it.</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 06 — PROMETHEUS SCALER ══════ -->
+<div class="slide" data-title="Prometheus Scaler">
+  <div class="slide-tag">Prometheus Scaler</div>
+  <h2>Prometheus Scaler — scale on any metric</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="callout" style="margin-bottom:.7em;">
+        <strong>Prometheus</strong> is an open-source metrics database that continuously collects numbers from your applications — connection counts, request rates, queue sizes, error counts. KEDA queries it using <strong>PromQL</strong> (the Prometheus query language) and uses the result to drive scaling decisions.
+      </div>
+      <div class="card blue" style="margin-bottom:.7em;">
+        <div class="badge b">What you can scale on</div>
+        <table>
+          <thead><tr><th>Signal</th><th>Example PromQL</th></tr></thead>
+          <tbody>
+            <tr><td>Active connections</td><td><code>sum(nginx_connections_active)</code></td></tr>
+            <tr><td>HTTP requests/sec</td><td><code>sum(rate(http_requests_total[2m]))</code></td></tr>
+            <tr><td>Messages in queue</td><td><code>rabbitmq_queue_messages_ready</code></td></tr>
+            <tr><td>P95 response time</td><td><code>histogram_quantile(0.95, rate(...))</code></td></tr>
+            <tr><td>Error rate</td><td><code>rate(http_errors_total[2m])</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout blue">
+        <strong>AWS AMP (Amazon Managed Prometheus):</strong> the managed scraper doesn't add a <code>namespace</code> label to scraped metrics. Filtering by namespace returns zero results. Use the metric name to identify your app instead.
+      </div>
+    </div>
+    <div>
+      <pre style="height:100%;">
+<span class="p">-</span> <span class="k">type:</span> <span class="v">prometheus</span>
+  <span class="k">authenticationRef:</span>
+    <span class="k">name:</span> <span class="v">aws-amp</span>
+    <span class="k">kind:</span> <span class="v">ClusterTriggerAuthentication</span>
+    <span class="c"># ↑ Separate auth object — credentials are
+    #   NEVER written in the ScaledObject YAML.
+    #   This one uses IRSA (IAM Roles for Service
+    #   Accounts) — no static keys anywhere.</span>
+
+  <span class="k">metadata:</span>
+    <span class="k">serverAddress:</span> <span class="v">"${AMP_WORKSPACE_URL}"</span>
+    <span class="c"># ↑ The Prometheus server to query.
+    #   ${...} is substituted by Flux at deploy
+    #   time — the URL never lives in git.</span>
+
+    <span class="k">metricName:</span> <span class="v">nginx_connections_active</span>
+    <span class="c"># ↑ A name KEDA uses internally to identify
+    #   this metric in the HPA object. Must be
+    #   unique within the ScaledObject.</span>
+
+    <span class="k">query:</span> <span class="v">"sum(nginx_connections_active)"</span>
+    <span class="c"># ↑ PromQL sent to Prometheus every
+    #   pollingInterval seconds.
+    #   sum() adds values from all pods:
+    #   pod-A=60, pod-B=70 → total=130</span>
+
+    <span class="k">threshold:</span>           <span class="v">"20"</span>
+    <span class="c"># ↑ Target connections PER replica.
+    #   Formula: ceil(130 / 20) = 7 replicas.
+    #   "I want each replica to handle ≤20."</span>
+
+    <span class="k">activationThreshold:</span> <span class="v">"10"</span>
+    <span class="c"># ↑ Trigger stays INACTIVE below 10.
+    #   Browsers hold idle "keep-alive" TCP
+    #   connections (3–6) even when not sending
+    #   requests. Without this, those idle conns
+    #   would falsely activate scaling.</span>
+
+    <span class="k">awsRegion:</span> <span class="v">"eu-north-1"</span>
+    <span class="c"># ↑ Required for AWS SigV4 request signing.</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 07 — DYNATRACE SCALER ══════ -->
+<div class="slide" data-title="Dynatrace Scaler">
+  <div class="slide-tag">Dynatrace Scaler</div>
+  <h2>Dynatrace Scaler — scale on observability signals</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="callout" style="margin-bottom:.7em;">
+        <strong>Dynatrace</strong> continuously monitors your services end-to-end — response times, error rates, throughput, infrastructure metrics. The KEDA Dynatrace scaler queries the <strong>Metrics v2 API</strong> using a structured selector expression, letting you scale on anything Dynatrace can observe.
+      </div>
+      <div class="card purple" style="margin-bottom:.7em;">
+        <div class="badge p">Reading a Metrics v2 selector — left to right</div>
+        <pre style="font-size:.82em;">
+<span class="v">nginx_connections_active</span>      <span class="c">← 1. metric name</span>
+  <span class="k">:filter(and(</span>
+    <span class="v">eq(k8s.namespace.name,keda-testing)</span>
+  <span class="k">))</span>                            <span class="c">← 2. only this namespace</span>
+  <span class="k">:sum</span>                          <span class="c">← 3. add up all matching pods</span>
+  <span class="k">:fold</span>                         <span class="c">← 4. collapse time window to ONE number
+                                     (KEDA needs a single value to compare
+                                     against threshold)</span></pre>
+      </div>
+      <div class="callout" style="margin-bottom:.5em;">
+        <strong>API host:</strong> must be <code>https://abc.live.dynatrace.com</code><br>
+        — not <code>apps.dynatrace.com</code> (Metrics v2 API not available there → 404)<br>
+        — must include <code>https://</code> (missing scheme causes "unsupported protocol" error)
+      </div>
+      <div class="callout yellow">
+        <strong>Always set <code>from: "now-2m"</code>.</strong> The default query window is <strong>2 hours</strong>. A 3-minute traffic spike averaged over 2 hours is mathematically invisible — <code>:fold</code> returns a near-zero average and your trigger never fires. Use a short window that matches your expected load pattern.
+      </div>
+    </div>
+    <div>
+      <pre style="height:100%;">
+<span class="p">-</span> <span class="k">type:</span> <span class="v">dynatrace</span>
+  <span class="k">authenticationRef:</span>
+    <span class="k">name:</span>  <span class="v">keda-trigger-auth-dynatrace</span>
+    <span class="k">kind:</span>  <span class="v">ClusterTriggerAuthentication</span>
+    <span class="c"># ↑ The DT API token lives in an encrypted
+    #   Kubernetes Secret — never in this file.
+    #   Flow: plaintext token → kubeseal encrypt
+    #   → commit YAML to git (safe, encrypted)
+    #   → Flux deploys → controller decrypts
+    #   → K8s Secret in cluster only.</span>
+
+  <span class="k">metadata:</span>
+    <span class="k">metricSelector:</span>
+      <span class="v">"nginx_connections_active:filter(and(</span>
+<span class="v">       eq(k8s.namespace.name,keda-testing)))</span>
+<span class="v">       :sum:fold"</span>
+    <span class="c"># ↑ Full Dynatrace Metrics v2 selector.
+    #   Read left to right:
+    #   metric → namespace filter → sum → fold</span>
+
+    <span class="k">from:</span> <span class="v">"now-2m"</span>
+    <span class="c"># ↑ Query window: last 2 minutes only.
+    #   CRITICAL — do not omit this field.
+    #   Default is now-2h which dilutes spikes.</span>
+
+    <span class="k">threshold:</span>           <span class="v">"10"</span>
+    <span class="c"># ↑ Target per replica: ceil(metric / 10).
+    #   50 connections → 5 replicas.</span>
+
+    <span class="k">activationThreshold:</span> <span class="v">"7"</span>
+    <span class="c"># ↑ nginx keeps 3–6 idle keep-alive conns.
+    #   Setting this to 7 means those idle
+    #   background connections never activate
+    #   the trigger — only real traffic does.</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 08 — LIVE SCALEDOBJECT ══════ -->
+<div class="slide" data-title="Live ScaledObject — Full YAML">
+  <div class="slide-tag">Live Demo</div>
+  <h2>The ScaledObject — every field explained</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <pre style="height:100%;font-size:.73em;">
+<span class="k">apiVersion:</span> <span class="v">keda.sh/v1alpha1</span>
+<span class="k">kind:</span>       <span class="v">ScaledObject</span>    <span class="c">← KEDA custom resource</span>
+<span class="k">metadata:</span>
+  <span class="k">name:</span>      <span class="v">nginx-keda-sample</span>
+  <span class="k">namespace:</span> <span class="v">keda-testing</span>
+<span class="k">spec:</span>
+  <span class="k">scaleTargetRef:</span>
+    <span class="k">name:</span> <span class="v">nginx-keda-sample</span>    <span class="c">① exact Deployment name — must match</span>
+  <span class="k">minReplicaCount:</span> <span class="n">1</span>          <span class="c">② minimum pods (default: 0)</span>
+  <span class="k">maxReplicaCount:</span> <span class="n">10</span>         <span class="c">③ hard cap passed to HPA (default: 100)</span>
+  <span class="k">pollingInterval:</span> <span class="n">15</span>         <span class="c">④ check triggers every 15 s (default: 30)</span>
+  <span class="k">cooldownPeriod:</span>  <span class="n">60</span>         <span class="c">⑤ wait before scale-to-zero (default: 300)</span>
+  <span class="k">advanced:</span>
+    <span class="k">horizontalPodAutoscalerConfig:</span>
+      <span class="k">behavior:</span>
+        <span class="k">scaleDown:</span>
+          <span class="k">stabilizationWindowSeconds:</span> <span class="n">60</span>  <span class="c">⑥ HPA scale-down delay</span>
+  <span class="k">triggers:</span>
+    <span class="p">-</span> <span class="k">type:</span> <span class="v">cron</span>               <span class="c">⑦ replica floor: 18:00–06:00</span>
+      <span class="k">metadata:</span>
+        <span class="k">timezone:</span>        <span class="v">"Europe/Stockholm"</span>
+        <span class="k">start:</span>           <span class="v">"0 18 * * *"</span>
+        <span class="k">end:</span>             <span class="v">"0 6 * * *"</span>
+        <span class="k">desiredReplicas:</span> <span class="v">"1"</span>
+    <span class="p">-</span> <span class="k">type:</span> <span class="v">prometheus</span>          <span class="c">⑧ scale on connections from AWS AMP</span>
+      <span class="k">authenticationRef:</span>
+        <span class="k">name:</span> <span class="v">aws-amp</span>
+        <span class="k">kind:</span> <span class="v">ClusterTriggerAuthentication</span>
+      <span class="k">metadata:</span>
+        <span class="k">serverAddress:</span>       <span class="v">"${AMP_WORKSPACE_URL}"</span>
+        <span class="k">metricName:</span>          <span class="v">nginx_connections_active</span>
+        <span class="k">query:</span>               <span class="v">"sum(nginx_connections_active)"</span>
+        <span class="k">threshold:</span>           <span class="v">"20"</span>
+        <span class="k">activationThreshold:</span> <span class="v">"10"</span>
+        <span class="k">awsRegion:</span>           <span class="v">"eu-north-1"</span>
+    <span class="p">-</span> <span class="k">type:</span> <span class="v">dynatrace</span>           <span class="c">⑨ scale on connections from Dynatrace</span>
+      <span class="k">authenticationRef:</span>
+        <span class="k">name:</span> <span class="v">keda-trigger-auth-dynatrace</span>
+        <span class="k">kind:</span> <span class="v">ClusterTriggerAuthentication</span>
+      <span class="k">metadata:</span>
+        <span class="k">metricSelector:</span>
+          <span class="v">"nginx_connections_active:filter(and(</span>
+<span class="v">           eq(k8s.namespace.name,keda-testing))):sum:fold"</span>
+        <span class="k">from:</span>                <span class="v">"now-2m"</span>
+        <span class="k">threshold:</span>           <span class="v">"10"</span>
+        <span class="k">activationThreshold:</span> <span class="v">"7"</span></pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.55em;">
+      <div class="card">
+        <div class="badge">① scaleTargetRef — what to scale</div>
+        <p>Must exactly match the Deployment name. KEDA silently fails to reconcile if this is wrong — the admission webhook will catch it at <code>kubectl apply</code>.</p>
+      </div>
+      <div class="card green">
+        <div class="badge g">② min=1 &nbsp; ③ max=10 — guardrails</div>
+        <p><code>min=1</code>: always one warm pod — no cold-start delay for users. <code>max=10</code>: hard safety cap. Default is 100 — a misbehaving metric can spawn 100 pods without this.</p>
+      </div>
+      <div class="card blue">
+        <div class="badge b">④ pollingInterval · ⑤ cooldownPeriod · ⑥ stabilization</div>
+        <p><code>pollingInterval: 15</code> — KEDA checks every 15 s (default 30 s).<br>
+        <code>cooldownPeriod: 60</code> — after all triggers go idle, wait 60 s before scaling to zero (default <strong>300 s</strong> — very slow without override).<br>
+        <code>stabilizationWindowSeconds: 60</code> — HPA holds the highest recent replica count for 60 s before scaling down (default 300 s — must set both to avoid staying at peak for 5 minutes).</p>
+      </div>
+      <div class="card accent">
+        <div class="badge">⑦ ⑧ ⑨ Three triggers — OR logic, MAX wins</div>
+        <p>All three run in parallel, evaluated every <code>pollingInterval</code>. KEDA calculates desired replicas from each active trigger and forwards the <strong>maximum</strong> to the HPA.<br>
+        <em>Example: cron=1, Prometheus=5, Dynatrace=8 → HPA target = 8.</em></p>
+      </div>
+      <div class="formula">desiredReplicas = <span class="hl">ceil</span>( metric ÷ threshold )</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 09 — SCALING MATH ══════ -->
+<div class="slide" data-title="How the Scaling Math Works">
+  <div class="slide-tag">How it works</div>
+  <h2>How the scaling math works</h2>
+  <div class="formula" style="flex-shrink:0;">desiredReplicas = <span class="hl">ceil</span>( metricValue ÷ threshold ) &nbsp;<span style="color:var(--muted);font-size:.8em;">— same formula Kubernetes HPA uses</span></div>
+  <div class="cols-2" style="flex:1;gap:1em;margin-top:.5em;">
+    <div>
+      <div class="card" style="margin-bottom:.7em;">
+        <div class="badge">Phase 1 — Is this trigger even awake?</div>
+        <p style="font-size:.85em;">Every trigger has an <code>activationThreshold</code>. The trigger is <strong>INACTIVE</strong> (ignored completely) until the metric exceeds this value. This filters out idle background noise.</p>
+        <pre>
+<span class="c"># Idle: 4 keep-alive connections, activationThreshold=7</span>
+4 ≤ 7  → trigger <span class="hl">INACTIVE</span> → stays at minReplicaCount=<span class="n">1</span>
+
+<span class="c"># Load arrives: 100 connections</span>
+100 > 7 → trigger <span class="hl-g">ACTIVE</span> → run the formula
+
+<span class="c"># Important: if minReplicaCount ≥ 1, the trigger is
+# always considered active — activationThreshold is
+# only meaningful when minReplicaCount = 0.</span></pre>
+      </div>
+      <div class="card">
+        <div class="badge">Phase 2 — How many replicas?</div>
+        <pre>
+<span class="c"># 100 connections, threshold=10 per replica</span>
+ceil( 100 ÷ 10 ) = <span class="hl-g">10 replicas</span>
+
+<span class="c"># "I want ≤10 connections per replica.
+#  With 100 total I need 10 pods."
+
+# Multiple triggers — KEDA picks MAX:</span>
+cron=<span class="n">1</span>, prometheus=<span class="n">5</span>, dynatrace=<span class="n">8</span>
+→ HPA target = <span class="hl-g">8</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:.7em;">
+        <div class="badge">Live timeline — this demo</div>
+        <table>
+          <thead><tr><th>Time</th><th>Event</th><th>Connections</th><th>Replicas</th></tr></thead>
+          <tbody>
+            <tr><td>T+0</td><td>Idle (keep-alive only)</td><td>4–6</td><td><span class="hl-y">1 (inactive)</span></td></tr>
+            <tr><td>T+20s</td><td>5 load pods connect</td><td>~100</td><td><span class="hl-g">10 (DT fires first)</span></td></tr>
+            <tr><td>T+60s</td><td>AMP scrape captures load</td><td>~100</td><td><span class="hl-g">10 (both active)</span></td></tr>
+            <tr><td>T+80s</td><td>Load pods disconnect</td><td>drops to 4</td><td><span class="hl-y">cooldown starts</span></td></tr>
+            <tr><td>T+140s</td><td>Cooldown + stabilization</td><td>4</td><td><span class="hl-g">1 (scaled back down)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="badge">Why DT fires before AMP</div>
+        <p style="font-size:.85em;">Dynatrace OneAgent streams metrics continuously — KEDA sees the spike within one <code>pollingInterval</code> (15 s). AWS AMP scrapes on a fixed interval (typically 60 s) — it may not have sampled since the load started. This is why having both scalers provides faster reaction: whichever sees the load first wins.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 10 — SECURITY ══════ -->
+<div class="slide" data-title="Keeping Credentials Secure">
+  <div class="slide-tag">Security</div>
+  <h2>Keeping credentials secure</h2>
+  <div class="callout" style="flex-shrink:0;margin-bottom:.6em;">
+    KEDA needs to call external APIs (Prometheus, Dynatrace) using credentials. <strong>Never put passwords, tokens, or API keys directly in the ScaledObject YAML</strong> — that file lives in git and is visible to anyone with repo access. KEDA's <code>TriggerAuthentication</code> resource separates credentials from scaling config entirely.
+  </div>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="card green">
+        <div class="badge g">AWS Prometheus (AMP) — IRSA</div>
+        <p style="margin-bottom:.5em;"><strong>IRSA</strong> = IAM Roles for Service Accounts. The KEDA pod gets an AWS IAM identity. AWS automatically injects short-lived credentials (15-minute expiry) — there is no password to write down, store, rotate, or leak.</p>
+        <pre>
+<span class="k">apiVersion:</span> <span class="v">keda.sh/v1alpha1</span>
+<span class="k">kind:</span>       <span class="v">ClusterTriggerAuthentication</span>
+<span class="k">metadata:</span>
+  <span class="k">name:</span> <span class="v">aws-amp</span>
+<span class="k">spec:</span>
+  <span class="k">podIdentity:</span>
+    <span class="k">provider:</span> <span class="v">aws</span>
+<span class="c"># That's the entire config.
+# AWS provides creds from the pod's
+# service account annotation:
+#   eks.amazonaws.com/role-arn: arn:...
+# Rotates automatically every 15 minutes.
+# Nothing to store, nothing to rotate,
+# nothing to leak.</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <div class="badge p">Dynatrace — SealedSecret</div>
+        <p style="margin-bottom:.5em;"><strong>SealedSecrets</strong> (Bitnami) encrypt a Kubernetes Secret with the cluster's public key. The encrypted YAML is safe to commit to git — only that specific cluster can decrypt it.</p>
+        <pre>
+<span class="c"># The flow from token to KEDA:</span>
+<span class="n">1.</span> DT API token (plaintext, never committed)
+   ↓  kubeseal --controller-namespace flux-system
+<span class="n">2.</span> SealedSecret YAML (encrypted) → commit to git ✓
+   ↓  Flux deploys to cluster
+<span class="n">3.</span> sealed-secrets controller decrypts it
+   ↓  creates a real Kubernetes Secret (cluster only)
+<span class="n">4.</span> ClusterTriggerAuthentication reads the Secret
+   ↓
+<span class="n">5.</span> KEDA uses token to call Dynatrace API
+
+<span class="c"># ClusterTriggerAuthentication spec:</span>
+<span class="k">spec:</span>
+  <span class="k">secretTargetRef:</span>
+    <span class="p">-</span> <span class="k">parameter:</span> <span class="v">token</span>
+      <span class="k">name:</span> <span class="v">dynatrace-token</span>  <span class="k">key:</span> <span class="v">token</span>
+    <span class="p">-</span> <span class="k">parameter:</span> <span class="v">host</span>
+      <span class="k">name:</span> <span class="v">dynatrace-token</span>  <span class="k">key:</span> <span class="v">host</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 11 — DEVELOPER RESPONSIBILITIES ══════ -->
+<div class="slide" data-title="Developer Responsibilities">
+  <div class="slide-tag">Your Checklist</div>
+  <h2>What you own as the developer</h2>
+  <div class="cols-2" style="flex:1;gap:1em;">
+    <div>
+      <div class="card" style="margin-bottom:.7em;">
+        <div class="badge y">1. Choose the right scaling signal</div>
+        <table>
+          <thead><tr><th>Your workload</th><th>Scale on</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Processes a message queue</td><td><span class="hl-g">Queue depth</span></td><td>Direct measure of work backlog</td></tr>
+            <tr><td>Serves HTTP requests</td><td><span class="hl-g">Request rate</span></td><td>Leads CPU — react before slowdown</td></tr>
+            <tr><td>Has a latency SLO</td><td><span class="hl-p">P95 response time</span></td><td>Scale on user experience directly</td></tr>
+            <tr><td>Has predictable hours</td><td><span class="hl-y">Cron + metric</span></td><td>Pre-warm; metric drives actual count</td></tr>
+            <tr><td>CPU-bound compute</td><td>Standard HPA (CPU)</td><td>CPU is the actual bottleneck here</td></tr>
+          </tbody>
+        </table>
+        <div class="callout yellow" style="margin-top:.5em;">
+          <strong>Avoid CPU as the primary signal</strong> for event-driven workloads. CPU spikes happen <em>after</em> requests are already queuing. A leading signal (queue depth, connection count) lets KEDA add pods <em>before</em> users notice.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.7em;">
+        <div class="badge g">2. Set safe replica guardrails</div>
+        <ul>
+          <li><code>min=0</code>: only for async batch jobs. Cold start (image pull + app init) takes 15–60 s — users on a web API will notice.</li>
+          <li><code>min=1</code>: for user-facing APIs — always one warm pod.</li>
+          <li><code>min=2</code>: for HA — one pod can restart or be evicted without any downtime.</li>
+          <li><strong><code>max</code> — always set explicitly.</strong> Default is 100. Calculate: <code>max × connections/pod ≤ DB max_connections</code>. Same logic for external API rate limits and Kafka partitions.</li>
+        </ul>
+      </div>
+      <div class="card blue">
+        <div class="badge b">3. Know your downstream impact</div>
+        <ul>
+          <li><strong>Databases:</strong> 20 pods × 10 conn/pod = 200 connections — check <code>max_connections</code></li>
+          <li><strong>External APIs:</strong> more pods = more parallel calls = easier to hit rate limits</li>
+          <li><strong>Kafka:</strong> consumer pods ≤ partition count; extra pods sit idle</li>
+          <li><strong>Stateful apps</strong> (WebSocket, in-flight DB transactions): add a <code>preStop</code> lifecycle hook so pods drain gracefully before terminating — otherwise connections drop mid-request</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 24 — END
+══════════════════════════════════════════════ -->
+<div class="slide" data-title="Thank you">
+  <div style="margin: auto; text-align: center; max-width: 560px;">
+    <div class="rust-line" style="margin: 0 auto 24px;"></div>
+    <h1 style="font-size: clamp(28px, 4.5vw, 56px); margin-bottom: 20px;">
+      Questions?
+    </h1>
+    <p class="subtitle" style="text-align: center; margin: 0 auto 40px;">
+      KEDA docs: <code>keda.sh</code><br/>
+      Scalers reference: <code>keda.sh/docs/scalers</code><br/>
+      This demo: <code>KEDA-DEMO.md</code>
+    </p>
+    <div class="cols-3" style="max-width: 440px; margin: 0 auto;">
+      <div class="card accent" style="text-align:center; padding: 16px;">
+        <div style="font-size: 22px; margin-bottom: 6px;">⏰</div>
+        <div style="font-family: var(--mono); font-size: 11px; color: var(--rust);">CRON</div>
+      </div>
+      <div class="card blue" style="text-align:center; padding: 16px;">
+        <div style="font-size: 22px; margin-bottom: 6px;">📈</div>
+        <div style="font-family: var(--mono); font-size: 11px; color: var(--blue);">PROMETHEUS</div>
+      </div>
+      <div class="card purple" style="text-align:center; padding: 16px;">
+        <div style="font-size: 22px; margin-bottom: 6px;">🔭</div>
+        <div style="font-family: var(--mono); font-size: 11px; color: var(--purple);">DYNATRACE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /deck -->
+
+  <!-- PPT FOOTER -->
+  <div id="ppt-footer">
+    <div id="ppt-author">Nitin Jain</div>
+    <div id="ppt-nav">
+      <button id="btn-prev" title="Previous (←)">&#8592;</button>
+      <span id="ppt-counter">1 / 25</span>
+      <button id="btn-next" title="Next (→)">&#8594;</button>
+    </div>
+    <button id="ppt-fs">⛶ fullscreen</button>
+    <button id="ppt-toc">☰ slides</button>
+  </div>
+
+</div><!-- /deck-wrap -->
+
+<script>
+(function () {
+  const slides     = Array.from(document.querySelectorAll('.slide'));
+  const total      = slides.length;
+  let current      = 0;
+
+  const bar        = document.getElementById('progress-bar');
+  const counter    = document.getElementById('ppt-counter');
+  const btnPrev    = document.getElementById('btn-prev');
+  const btnNext    = document.getElementById('btn-next');
+  const tocOvl     = document.getElementById('toc-overlay');
+  const tocList    = document.getElementById('toc-list');
+  const tocClose   = document.getElementById('toc-close');
+  const fsBtn      = document.getElementById('ppt-fs');
+  const tocBtn     = document.getElementById('ppt-toc');
+  const hdrTitle   = document.getElementById('ppt-slide-title');
+  const hdrSection = document.getElementById('ppt-section-tag');
+  const hdrAccent  = document.getElementById('ppt-header-accent');
+
+  /* section colour map */
+  const sectionColours = {
+    'Introduction': 'var(--rust)',
+    'Cron':         'var(--yellow)',
+    'Prometheus':   'var(--blue)',
+    'Dynatrace':    'var(--purple)',
+    'Developer':    'var(--green)',
+    'Title':        'var(--rust)',
+    'Thank':        'var(--rust)',
+  };
+
+  /* ── FULLSCREEN ── */
+  function updateFsLabel() {
+    fsBtn.textContent = document.fullscreenElement ? '✕ exit' : '⛶ fullscreen';
+  }
+  fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  });
+  document.addEventListener('fullscreenchange', updateFsLabel);
+  document.addEventListener('keydown', e => {
+    if ((e.key==='f'||e.key==='F') && !tocOvl.classList.contains('open')) fsBtn.click();
+  });
+  updateFsLabel();
+
+  /* ── BUILD TOC ── */
+  slides.forEach((s, i) => {
+    const title = s.dataset.title || ('Slide ' + (i+1));
+    const div = document.createElement('div');
+    div.className = 'toc-item';
+    div.innerHTML = '<span class="toc-num">'+String(i+1).padStart(2,'0')+'</span>'+title;
+    div.addEventListener('click', () => { go(i); closeToc(); });
+    tocList.appendChild(div);
+  });
+
+  /* ── NAVIGATE ── */
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total-1, n));
+    const s = slides[current];
+    s.style.animation = 'none';
+    void s.offsetWidth;
+    s.style.animation = '';
+    s.classList.add('active');
+
+    bar.style.width = ((current/(total-1))*100)+'%';
+    counter.textContent = (current+1)+' / '+total;
+    btnPrev.disabled = current===0;
+    btnNext.disabled = current===total-1;
+
+    /* update header */
+    const rawTitle = s.dataset.title || '';
+    const isTitle  = rawTitle==='Title';
+    const isSection = rawTitle.startsWith('§');
+
+    /* hide header on title slide, show on all others */
+    document.getElementById('ppt-header').style.display = isTitle ? 'none' : 'flex';
+
+    if (!isTitle) {
+      /* slide-tag in header = section context */
+      const tag = s.querySelector('.slide-tag');
+      hdrSection.textContent = tag ? tag.textContent.trim() : '';
+      /* heading in header */
+      const h2 = s.querySelector('h2');
+      const h1 = s.querySelector('h1');
+      hdrTitle.textContent = isSection
+        ? (rawTitle.replace('§ ',''))
+        : (h2 ? h2.textContent.trim() : (h1 ? h1.textContent.trim() : rawTitle));
+
+      /* accent colour by section */
+      const col = Object.entries(sectionColours).find(([k])=>rawTitle.includes(k));
+      hdrAccent.style.background = col ? col[1] : 'var(--rust)';
+    }
+  }
+
+  btnPrev.addEventListener('click', () => go(current-1));
+  btnNext.addEventListener('click', () => go(current+1));
+
+  document.addEventListener('keydown', e => {
+    if (tocOvl.classList.contains('open')) { if(e.key==='Escape') closeToc(); return; }
+    if (e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { e.preventDefault(); go(current+1); }
+    if (e.key==='ArrowLeft' ||e.key==='ArrowUp')                { e.preventDefault(); go(current-1); }
+    if (e.key==='Home') go(0);
+    if (e.key==='End')  go(total-1);
+  });
+
+  tocBtn.addEventListener('click', () => tocOvl.classList.add('open'));
+  tocClose.addEventListener('click', closeToc);
+  tocOvl.addEventListener('click', e => { if(e.target===tocOvl) closeToc(); });
+  function closeToc() { tocOvl.classList.remove('open'); }
+
+  go(0);
+})();
+</script>
+</body>
+</html>
