@@ -68,7 +68,7 @@
             <span id="submit-label">Send message</span>
             <svg id="submit-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <p id="form-status" class="text-sm font-mono hidden"></p>
+          <p id="form-status" class="text-sm font-mono"></p>
         </div>
       </form>
 
@@ -129,7 +129,7 @@
         if (data.success) {
           form.reset();
           label.textContent = 'Sent!';
-          status.textContent = 'Message received. I'll get back to you shortly.';
+          status.textContent = 'Message received. I will get back to you shortly.';
           status.className = 'text-sm font-mono text-cyan/80';
         } else {
           throw new Error('non-ok');
