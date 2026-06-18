@@ -1,0 +1,59 @@
+---
+import StatCounters from './StatCounters.svelte';
+
+const stats = [
+  { value: 15, suffix: '+', label: 'Years Experience' },
+  { value: 40, suffix: '+', label: 'AWS Accounts Managed' },
+  { value: 99.99, suffix: '%', label: 'Platform Uptime' },
+  { value: 100, suffix: 's', label: 'Engineers Served Daily' },
+];
+---
+<section id="about" class="py-24 px-6 max-w-6xl mx-auto">
+  <h2 class="about-heading text-3xl font-bold mb-16 text-center opacity-0">About</h2>
+
+  <div class="grid md:grid-cols-2 gap-16 items-start">
+    <div class="about-left opacity-0 flex flex-col items-center md:items-start gap-8">
+      <img
+        src="/assets/photos/avatar.webp"
+        alt="Nitin Jain"
+        width="160"
+        height="160"
+        loading="eager"
+        class="w-40 h-40 rounded-full border-2 border-cyan/30 object-cover"
+      />
+      <div class="text-white/65 leading-relaxed space-y-4 text-center md:text-left">
+        <p>
+          Principal Platform Engineer based in Stockholm, Sweden — 15+ years building the
+          infrastructure that makes everyone else's work possible. Started in telecom at Ericsson,
+          moved through cloud at AWS, landed in platform engineering at scale, and never looked back.
+        </p>
+        <p>
+          My philosophy: if it's not in Git, it doesn't exist. If it's not automated, it's a future
+          incident waiting to happen. I've designed landing zones for 40+ AWS accounts, migrated
+          organisations onto EKS, and built the GitOps pipelines that hundreds of engineers ship on
+          every day — without a runbook in sight.
+        </p>
+        <p>
+          Outside of work, I'm co-founder and CTO of Favia IT Solutions AB — a company I run with
+          my wife. I believe in building things with the people you trust most.
+          Platforms at work. Companies at home.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-right opacity-0">
+      <StatCounters {stats} client:visible />
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const st = { trigger: '#about', start: 'top 75%' };
+  gsap.to('.about-heading', { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });
+  gsap.to('.about-left',   { opacity: 1, x: 0, duration: 0.8, scrollTrigger: st });
+  gsap.to('.about-right',  { opacity: 1, x: 0, duration: 0.8, delay: 0.15, scrollTrigger: st });
+</script>
