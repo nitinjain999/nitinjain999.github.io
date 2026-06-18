@@ -51,12 +51,12 @@
     </p>
 
     <!-- Typewriter tagline -->
-    <p id="hero-tagline" class="min-h-[2.5rem] text-white/35 font-mono mb-10 max-w-2xl"
+    <p id="hero-tagline" class="min-h-[1.6rem] text-white/35 font-mono mb-8 max-w-2xl"
        style="font-size:clamp(0.85rem,1.4vw,1rem);"></p>
 
     <!-- Tech stack pills -->
     <div id="hero-stack" class="opacity-0 flex flex-wrap justify-center gap-2 mb-12">
-      {['EKS', 'Terraform', 'FluxCD', 'GitHub Actions', 'Datadog', 'AWS', 'Kubernetes', 'GitOps', 'OpenShift', 'Helm', 'ArgoCD', 'Kyverno', 'KEDA', 'Linkerd', 'OPA', 'Dynatrace', 'Python', 'Bash'].map(t => (
+      {['AWS', 'EKS', 'Kubernetes', 'Terraform', 'FluxCD', 'ArgoCD', 'GitOps', 'GitHub Actions', 'Helm', 'Kyverno', 'OPA', 'KEDA', 'Linkerd', 'Datadog', 'Dynatrace', 'OpenShift', 'Claude Code', 'LLM Ops', 'Python', 'Bash'].map(t => (
         <span class="font-mono px-3 py-1 rounded-full border border-cyan/20 text-cyan/70 bg-cyan/[0.04] hover:border-cyan/50 hover:text-cyan hover:bg-cyan/[0.08] transition-colors duration-200"
               style="font-size:clamp(0.7rem,1vw,0.8rem);">
           {t}
@@ -73,7 +73,7 @@
         Let's Connect
       </a>
       <a href="#experience"
-         class="rounded-xl border border-white/20 text-white/90 font-medium hover:border-cyan/40 hover:text-white transition-all duration-200"
+         class="rounded-xl border border-white/15 text-white/60 font-medium hover:border-cyan/40 hover:text-cyan/80 transition-all duration-200"
          style="padding:0.8em 2em;font-size:clamp(0.85rem,1.2vw,1rem);">
         View Experience
       </a>
@@ -159,7 +159,7 @@
         sp.className = 'char-space';
         sp.setAttribute('aria-hidden', 'true');
         sp.style.display = 'inline-block';
-        sp.style.width = '0.35em';
+        sp.style.width = '0.22em';
         nameEl.appendChild(sp);
       } else {
         const wrap = document.createElement('span');

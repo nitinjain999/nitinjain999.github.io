@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://nitinjain999.github.io',
+  devToolbar: { enabled: false },
   integrations: [svelte(), sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

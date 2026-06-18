@@ -52,20 +52,35 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <span class="w-1.5 h-1.5 rounded-full bg-cyan/60 animate-pulse inline-block flex-shrink-0"></span>
       <span id="visit-count">—</span>
       <span class="text-white/20">views</span>
+      <span class="text-white/15">·</span>
+      <span id="visit-flag"></span>
+      <span id="visit-country" class="text-white/30"></span>
     </div>
 
     <script>
-      fetch('https://hits.seeyoufarm.com/api/count/incr/badge.json?url=https%3A%2F%2Fnitinjain999.github.io')
-        .then(r => r.json())
-        .then(d => {
-          const el = document.getElementById('visit-count');
-          const counter = document.getElementById('visit-counter');
-          if (el && d.total !== undefined) {
-            el.textContent = Number(d.total).toLocaleString();
-            if (counter) counter.style.opacity = '1';
-          }
-        })
-        .catch(() => {});
+      Promise.all([
+        fetch('https://api.counterapi.dev/v1/nitinjain999/visits/up').then(r => r.json()),
+        fetch('https://ipapi.co/json/').then(r => r.json()),
+      ]).then(([counter, geo]) => {
+        const countEl   = document.getElementById('visit-count');
+        const flagEl    = document.getElementById('visit-flag');
+        const countryEl = document.getElementById('visit-country');
+        const wrapper   = document.getElementById('visit-counter');
+
+        if (countEl && counter.count !== undefined)
+          countEl.textContent = Number(counter.count).toLocaleString();
+
+        if (flagEl && geo.country_code) {
+          const flag = geo.country_code.toUpperCase().replace(/./g, c =>
+            String.fromCodePoint(c.charCodeAt(0) + 127397));
+          flagEl.textContent = flag;
+        }
+
+        if (countryEl && geo.country_name)
+          countryEl.textContent = geo.country_name;
+
+        if (wrapper) wrapper.style.opacity = '1';
+      }).catch(() => {});
     </script>
   </body>
 </html>
