@@ -52,6 +52,7 @@ const stats = [
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   function init() {
+    ScrollTrigger.getAll().forEach(t => t.kill());
     gsap.registerPlugin(ScrollTrigger);
     const st = { trigger: '#about', start: 'top 75%' };
     gsap.fromTo('.about-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });

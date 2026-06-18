@@ -51,6 +51,7 @@ const tags = ['Kubernetes', 'Terraform', 'GitOps', 'KEDA', 'Linkerd', 'OPA', 'Ky
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   function init() {
+    ScrollTrigger.getAll().forEach(t => t.kill());
     gsap.registerPlugin(ScrollTrigger);
     gsap.fromTo('.os-heading',
       { opacity: 0, y: 30 },

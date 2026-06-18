@@ -31,6 +31,7 @@ const domains = [
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   function init() {
+    ScrollTrigger.getAll().forEach(t => t.kill());
     gsap.registerPlugin(ScrollTrigger);
     const st = { trigger: '#build', start: 'top 78%' };
     gsap.fromTo('.build-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
