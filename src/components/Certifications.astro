@@ -1,0 +1,45 @@
+---
+const certs = [
+  { label: 'AWS Certified Solutions Architect – Associate', color: 'border-orange-500/30 text-orange-400 bg-orange-500/5' },
+  { label: 'AWS Certified DevOps Engineer – Professional',  color: 'border-orange-500/30 text-orange-400 bg-orange-500/5' },
+  { label: 'AWS Certified Security – Specialty',            color: 'border-orange-500/30 text-orange-400 bg-orange-500/5' },
+  { label: 'AWS Partner: Cloud Economics Essentials',       color: 'border-orange-500/30 text-orange-400 bg-orange-500/5' },
+  { label: 'Certified Kubernetes (KCM100, Mirantis)',       color: 'border-blue-500/30 text-blue-400 bg-blue-500/5' },
+  { label: 'Google Professional Cloud Architect',           color: 'border-green-500/30 text-green-400 bg-green-500/5' },
+  { label: 'Implementing Azure Infrastructure, Exam 533',   color: 'border-sky-500/30 text-sky-400 bg-sky-500/5' },
+];
+---
+<section id="certs" class="py-16 px-6 max-w-6xl mx-auto">
+  <h2 class="certs-heading text-3xl font-bold mb-12 text-center opacity-0">Certifications</h2>
+  <div class="flex flex-wrap justify-center gap-3">
+    {certs.map((c, i) => (
+      <span class={`cert-badge opacity-0 px-4 py-2 rounded-full border text-sm font-mono ${c.color}`}>
+        {c.label}
+      </span>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function init() {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.fromTo('.certs-heading',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.6,
+        scrollTrigger: { trigger: '#certs', start: 'top 80%' } });
+    gsap.fromTo(
+      gsap.utils.toArray('.cert-badge'),
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1, y: 0, duration: 0.45,
+        stagger: (i) => i * 0.07,
+        scrollTrigger: { trigger: '#certs', start: 'top 80%' },
+      }
+    );
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>
