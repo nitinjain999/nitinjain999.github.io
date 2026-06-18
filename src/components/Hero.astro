@@ -1,0 +1,245 @@
+---
+// Hero section — full-viewport animated mesh gradient with GSAP reveals
+---
+
+<section id="hero" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+
+  <!-- Animated mesh gradient background -->
+  <div id="hero-mesh" class="absolute inset-0 z-0" aria-hidden="true">
+    <div class="mesh-bg absolute inset-0"></div>
+  </div>
+
+  <!-- Gradient fade to background at bottom -->
+  <div class="absolute bottom-0 left-0 right-0 h-48 z-10 bg-gradient-to-t from-background to-transparent pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div class="relative z-20 flex flex-col items-center text-center px-6 max-w-4xl mx-auto">
+
+    <!-- Freelance badge -->
+    <div
+      id="hero-badge"
+      class="opacity-0 mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan/30 bg-cyan/5 text-cyan text-xs font-mono tracking-wide"
+    >
+      <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse inline-block"></span>
+      Open for freelance
+    </div>
+
+    <!-- Name heading — split into character spans by GSAP -->
+    <h1 id="hero-name" class="opacity-0 text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-4 overflow-hidden">
+      Nitin Jain
+    </h1>
+
+    <!-- Title -->
+    <p id="hero-title" class="opacity-0 text-xl md:text-2xl text-white/60 font-light mb-6">
+      Principal Platform Engineer
+    </p>
+
+    <!-- Typewriter tagline -->
+    <p id="hero-tagline" class="min-h-[3rem] text-base md:text-lg text-white/40 font-mono mb-10 max-w-2xl"></p>
+
+    <!-- CTAs -->
+    <div id="hero-ctas" class="opacity-0 flex flex-wrap gap-4 justify-center">
+      <a
+        href="#blog"
+        class="px-6 py-3 rounded-lg bg-cyan text-black font-semibold text-sm hover:opacity-90 transition-opacity"
+      >
+        Read the Blog
+      </a>
+      <a
+        href="/assets/nitin-jain-cv.pdf"
+        download
+        class="px-6 py-3 rounded-lg border border-white/20 text-white text-sm font-semibold hover:border-cyan/50 hover:text-cyan transition-colors"
+      >
+        Download CV
+      </a>
+      <a
+        href="#contact"
+        class="px-6 py-3 rounded-lg border border-white/20 text-white text-sm font-semibold hover:border-cyan/50 hover:text-cyan transition-colors"
+      >
+        Let's Connect
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Scroll indicator -->
+  <div id="hero-scroll" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-0">
+    <span class="text-[10px] font-mono tracking-[0.25em] text-white/30 uppercase">Scroll</span>
+    <div class="w-px h-12 bg-gradient-to-b from-cyan to-transparent scroll-line"></div>
+  </div>
+
+</section>
+
+<style>
+  /* Animated mesh gradient */
+  .mesh-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 40%, rgba(0,180,216,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 80% 60%, rgba(99,102,241,0.18) 0%, transparent 70%);
+    animation: meshShift 12s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  @keyframes meshShift {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(20px, -15px) scale(1.04); }
+    66%  { transform: translate(-15px, 20px) scale(0.97); }
+    100% { transform: translate(10px, 10px) scale(1.02); }
+  }
+
+  /* Scroll indicator line animation */
+  .scroll-line {
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(0.7); }
+  }
+
+  /* Character spans created by GSAP — clip overflow so translate-y-full hides them */
+  #hero-name .char-wrap {
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1.1;
+    vertical-align: bottom;
+  }
+  #hero-name .char {
+    display: inline-block;
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  /* Preserve spaces */
+  #hero-name .char-space {
+    display: inline-block;
+    width: 0.3em;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  // ── Ensure DOM is ready ──────────────────────────────────────────────────────
+  document.addEventListener('astro:page-load', init);
+  // Also run on first load (no View Transition fired)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  function init() {
+    const nameEl = document.getElementById('hero-name');
+    if (!nameEl || nameEl.dataset.heroInit === '1') return;
+    nameEl.dataset.heroInit = '1';
+
+    // ── Split h1 into character spans ─────────────────────────────────────────
+    const originalText = nameEl.textContent ?? '';
+    nameEl.innerHTML = '';
+    nameEl.style.opacity = '1'; // override Tailwind opacity-0; GSAP will handle chars
+
+    for (const ch of originalText) {
+      if (ch === ' ') {
+        const sp = document.createElement('span');
+        sp.className = 'char-space';
+        sp.setAttribute('aria-hidden', 'true');
+        nameEl.appendChild(sp);
+      } else {
+        const wrap = document.createElement('span');
+        wrap.className = 'char-wrap';
+        const inner = document.createElement('span');
+        inner.className = 'char';
+        inner.textContent = ch;
+        wrap.appendChild(inner);
+        nameEl.appendChild(wrap);
+      }
+    }
+
+    const chars = nameEl.querySelectorAll<HTMLElement>('.char');
+
+    // ── GSAP master timeline ───────────────────────────────────────────────────
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    // Badge at 0.75s
+    tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.6 }, 0.75);
+
+    // Characters from 0.1s, 0.05s stagger
+    tl.to(chars, { y: 0, opacity: 1, duration: 0.6, stagger: 0.05 }, 0.1);
+
+    // Title: fade-up from y:20 at 0.6s
+    tl.fromTo(
+      '#hero-title',
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.7 },
+      0.6,
+    );
+
+    // CTAs
+    tl.to('#hero-ctas', { opacity: 1, y: 0, duration: 0.6 }, 1.1);
+
+    // Scroll indicator
+    tl.to('#hero-scroll', { opacity: 1, duration: 0.6 }, 1.4);
+
+    // ── Typewriter tagline ─────────────────────────────────────────────────────
+    const lines = [
+      'I build the cloud platform that hundreds of engineers ship on every day.',
+      "If it's not in Git, it doesn't exist.",
+      "I don't follow platform best practices — I write them.",
+    ];
+
+    const tagline = document.getElementById('hero-tagline');
+    if (tagline) {
+      let lineIdx = 0;
+      let charIdx = 0;
+      let typing = true;
+      let typeTimer: ReturnType<typeof setTimeout>;
+
+      function typeChar() {
+        if (!tagline) return;
+        if (typing) {
+          if (charIdx <= lines[lineIdx].length) {
+            tagline.textContent = lines[lineIdx].slice(0, charIdx);
+            charIdx++;
+            typeTimer = setTimeout(typeChar, 35);
+          } else {
+            // Hold for 3s then fade out
+            typeTimer = setTimeout(() => {
+              gsap.to(tagline, {
+                opacity: 0,
+                duration: 0.4,
+                onComplete: () => {
+                  tagline.textContent = '';
+                  tagline.style.opacity = '1';
+                  lineIdx = (lineIdx + 1) % lines.length;
+                  charIdx = 0;
+                  typeTimer = setTimeout(typeChar, 200);
+                },
+              });
+            }, 3000);
+          }
+        }
+      }
+
+      // Start typewriter after title appears (~1.3s into timeline)
+      typeTimer = setTimeout(typeChar, 1300);
+    }
+
+    // ── Gyroscope parallax (mobile) ────────────────────────────────────────────
+    const mesh = document.getElementById('hero-mesh');
+    if (mesh && window.DeviceOrientationEvent) {
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
+          const beta  = e.beta  ?? 0;   // front-back tilt
+          const gamma = e.gamma ?? 0;   // left-right tilt
+          gsap.to(mesh, {
+            x: gamma * 1.5,
+            y: beta  * 1.5,
+            duration: 0.8,
+            ease: 'power1.out',
+          });
+        }, { passive: true });
+      }
+    }
+  }
+</script>
