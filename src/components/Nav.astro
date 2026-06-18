@@ -1,0 +1,47 @@
+---
+const links = [
+  { href: '#about', label: 'About' },
+  { href: '#build', label: 'What I Build' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#opensource', label: 'Open Source' },
+  { href: '#blog', label: 'Writing' },
+  { href: '#human', label: 'Beyond' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+<nav id="nav" class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between transition-all duration-300">
+  <a href="#hero" class="text-cyan font-mono font-semibold text-sm tracking-widest hover:opacity-80 transition-opacity">NJ</a>
+  <ul class="hidden md:flex gap-8">
+    {links.map(l => (
+      <li>
+        <a href={l.href} class="text-sm text-white/50 hover:text-cyan transition-colors duration-200 font-medium">
+          {l.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+  <a
+    href="mailto:nitin.solna@gmail.com"
+    class="hidden md:inline-flex items-center gap-2 text-xs font-mono px-4 py-2 border border-cyan/40 text-cyan rounded-lg hover:bg-cyan/10 transition-colors"
+  >
+    Hire me
+  </a>
+</nav>
+
+<style>
+  nav.scrolled {
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+</script>
