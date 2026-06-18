@@ -48,13 +48,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <slot />
 
     <!-- Visitor counter — bottom right -->
-    <div class="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-black/60 backdrop-blur-md text-white/30 text-[10px] font-mono hover:text-white/50 transition-colors duration-300">
+    <a href="https://hits.seeyoufarm.com"
+       target="_blank" rel="noopener noreferrer"
+       class="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-black/60 backdrop-blur-md hover:border-cyan/30 transition-colors duration-300 group">
       <span class="w-1.5 h-1.5 rounded-full bg-cyan/50 animate-pulse inline-block"></span>
-      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnitinjain999.github.io&count_bg=%2300000000&title_bg=%2300000000&icon=&icon_color=%2300B4D8&title=visitors&edge_flat=true"
+      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnitinjain999.github.io&count_bg=%2300B4D8&title_bg=%23080810&icon=&icon_color=%23FFFFFF&title=visitors&edge_flat=true"
            alt="visitor count"
-           class="h-3.5 opacity-60 hover:opacity-100 transition-opacity"
+           class="h-4"
            loading="lazy" />
-    </div>
+    </a>
   </body>
 </html>
 
