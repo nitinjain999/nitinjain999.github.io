@@ -146,8 +146,10 @@
     if (!nameEl || nameEl.dataset.heroInit === '1') return;
     nameEl.dataset.heroInit = '1';
 
-    // Split into char spans — space gets fixed-width span so "Nitin Jain" stays two words
-    const originalText = nameEl.textContent ?? '';
+    // Split into char spans — space gets fixed-width span so "Nitin Jain" stays two words.
+    // Trim first to avoid leading/trailing whitespace creating phantom space spans.
+    // Width is set inline because Astro scoped styles don't apply to dynamically created elements.
+    const originalText = (nameEl.textContent ?? '').trim();
     nameEl.innerHTML = '';
     nameEl.style.opacity = '1';
 
@@ -156,6 +158,8 @@
         const sp = document.createElement('span');
         sp.className = 'char-space';
         sp.setAttribute('aria-hidden', 'true');
+        sp.style.display = 'inline-block';
+        sp.style.width = '0.35em';
         nameEl.appendChild(sp);
       } else {
         const wrap = document.createElement('span');
