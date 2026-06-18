@@ -1,0 +1,45 @@
+---
+const domains = [
+  { icon: '⚙️', title: 'Platform Engineering', desc: 'Golden paths on EKS & OpenShift with FluxCD, Linkerd, KEDA.' },
+  { icon: '🔁', title: 'DevOps & CI/CD', desc: 'Self-shipping pipelines: GitHub Actions, FluxCD, Doppler.' },
+  { icon: '⬅️', title: 'Shift-Left', desc: 'Security, policy and quality gates in the pull request.' },
+  { icon: '🏢', title: 'Cloud Landing Zones', desc: 'Multi-account AWS & Azure, all in Terraform.' },
+  { icon: '🛡️', title: 'Policy as Code', desc: 'OPA, Kyverno and Gatekeeper guardrails.' },
+  { icon: '📡', title: 'Observability & SRE', desc: 'SLOs, tracing and AIOps on Datadog and Dynatrace.' },
+  { icon: '💰', title: 'FinOps', desc: 'Cloud cost visibility and optimisation in-platform.' },
+  { icon: '🤖', title: 'AI × Platform', desc: 'Claude Code skills and LLM ops in production.' },
+  { icon: '☁️', title: 'Edge & CDN', desc: 'Global CDN, WAF and DNS at the edge.' },
+];
+---
+<section id="build" class="py-24 px-6 max-w-6xl mx-auto">
+  <h2 class="build-heading text-3xl font-bold mb-4 text-center opacity-0">What I Build</h2>
+  <p class="build-sub text-white/50 text-center mb-16 opacity-0">The domains I own, operate, and care deeply about.</p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {domains.map((d, i) => (
+      <div class="glass p-6 domain-card opacity-0" style={`--i:${i}`}>
+        <div class="text-3xl mb-3">{d.icon}</div>
+        <h3 class="font-semibold text-white mb-2">{d.title}</h3>
+        <p class="text-sm text-white/50 leading-relaxed">{d.desc}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const st = { trigger: '#build', start: 'top 78%' };
+  gsap.to('.build-heading', { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
+  gsap.to('.build-sub',     { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+
+  gsap.utils.toArray('.domain-card').forEach((card, i) => {
+    gsap.fromTo(card,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.6, delay: i * 0.08,
+        scrollTrigger: { trigger: '#build', start: 'top 72%' } }
+    );
+  });
+</script>
