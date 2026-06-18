@@ -1,0 +1,90 @@
+---
+const photos = [
+  { src: 'travel-dubai-quad',        alt: 'Quad biking in the Dubai desert',   caption: 'Dubai, UAE' },
+  { src: 'travel-stockholm-harbor',  alt: 'Stockholm frozen harbor in winter', caption: 'Stockholm, Sweden' },
+  { src: 'travel-geneva',            alt: 'Lake Geneva with Swiss flag',        caption: 'Geneva, Switzerland' },
+  { src: 'travel-moscow',            alt: 'Moscow river cruise',                caption: 'Moscow, Russia' },
+  { src: 'travel-alps',              alt: 'Swiss Alps at Jungfrau',             caption: 'Jungfrau, Switzerland' },
+  { src: 'travel-riyadh',            alt: 'Riyadh skyline at night',            caption: 'Riyadh, Saudi Arabia' },
+  { src: 'travel-rockies',           alt: 'Canadian Rockies in the mist',       caption: 'Canadian Rockies' },
+  { src: 'travel-mountains2',        alt: 'Mountain landscape',                 caption: 'On the road' },
+];
+const statements = [
+  { icon: '🌍', text: 'Stockholm is home. The world is the office.' },
+  { icon: '👨‍👩‍💼', text: 'I build platforms at work and companies with family. Co-founder, Favia IT Solutions AB.' },
+  { icon: '⚙️', text: "If it's not automated, it's a future incident waiting to happen." },
+  { icon: '🏍️', text: 'Quad bikes in Dubai. Glaciers in Switzerland. Git everywhere.' },
+];
+---
+<section id="human" class="py-24 px-6 max-w-6xl mx-auto">
+  <h2 class="human-heading text-3xl font-bold mb-4 text-center opacity-0">Beyond the Terminal</h2>
+  <p class="human-sub text-white/50 text-center mb-12 opacity-0">The person behind the platform.</p>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16">
+    {photos.map((photo, i) => (
+      <div class="photo-item opacity-0 relative group overflow-hidden rounded-xl aspect-square">
+        <picture>
+          <source srcset={`/assets/photos/${photo.src}.webp`} type="image/webp" />
+          <img
+            src={`/assets/photos/${photo.src}.jpg`}
+            alt={photo.alt}
+            loading="lazy"
+            width="400"
+            height="400"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </picture>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                    flex items-end p-3">
+          <span class="text-white text-xs font-mono">{photo.caption}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-5">
+    {statements.map((s, i) => (
+      <div class="statement-item glass p-5 flex items-start gap-4 opacity-0">
+        <span class="text-2xl flex-shrink-0">{s.icon}</span>
+        <p class="text-white/65 leading-relaxed">{s.text}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function init() {
+    ScrollTrigger.getAll().forEach(t => t.kill());
+    gsap.registerPlugin(ScrollTrigger);
+
+    const st = { trigger: '#human', start: 'top 78%' };
+    gsap.fromTo('.human-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
+    gsap.fromTo('.human-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+
+    gsap.fromTo(
+      gsap.utils.toArray('.photo-item'),
+      { opacity: 0, scale: 0.92 },
+      {
+        opacity: 1, scale: 1, duration: 0.5,
+        stagger: (i) => i * 0.06,
+        scrollTrigger: { trigger: '#human', start: 'top 73%' },
+      }
+    );
+
+    gsap.fromTo(
+      gsap.utils.toArray('.statement-item'),
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1, y: 0, duration: 0.5,
+        stagger: (i) => i * 0.1,
+        scrollTrigger: { trigger: '#human', start: 'top 60%' },
+      }
+    );
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>
