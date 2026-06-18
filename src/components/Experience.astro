@@ -1,0 +1,93 @@
+---
+import ExperienceTabs from './ExperienceTabs.svelte';
+
+const roles = [
+  {
+    title: 'Principal Platform Engineer',
+    company: 'Current Role',
+    period: 'Jun 2023 – Present',
+    location: 'Stockholm, Sweden',
+    bullets: [
+      'Designed and migrated the organisation to a Terraform-defined AWS Landing Zone.',
+      'Leading ongoing platform migration from OpenShift 4 to Amazon EKS.',
+      'Stood up a new cloud data platform; manage Doppler, Dynatrace and GitHub Enterprise as code.',
+      'Built CI/CD with GitHub composite actions and GitOps via FluxCD; secrets via Doppler.',
+      'Enforce platform-wide policy governance across clusters with OPA and Kyverno.',
+      'Advancing AIOps practices with Dynatrace active monitoring at 99.99%+ uptime.',
+    ],
+  },
+  {
+    title: 'CTO',
+    company: 'Favia IT Solutions AB',
+    period: 'Ongoing',
+    location: 'Stockholm, Sweden',
+    bullets: [
+      'Co-founded and operate a cloud and platform consultancy with my wife.',
+      'Lead technology strategy, architecture, and client delivery.',
+      'Offer select freelance engagements in platform engineering and cloud architecture.',
+    ],
+  },
+  {
+    title: 'Senior Technical Account Manager',
+    company: 'Amazon Web Services (AWS)',
+    period: 'Jun 2021 – May 2023',
+    location: 'Stockholm, Sweden',
+    bullets: [
+      'Trusted advisor on Enterprise Support to three of the largest Nordic enterprises.',
+      'Owned operational health, cost optimisation and Well-Architected reviews.',
+      'Led incident and escalation management for business-critical workloads.',
+      'Guided large-scale migration onto EKS, serverless, and IaC.',
+    ],
+  },
+  {
+    title: 'Senior DevOps Engineer',
+    company: 'ATG (Aktiebolaget Trav och Galopp)',
+    period: 'Apr 2019 – May 2021',
+    location: 'Stockholm, Sweden',
+    bullets: [
+      'Led container adoption and migration to OpenShift 4.',
+      'Designed unified DevOps framework across on-prem and AWS.',
+      'Established GitOps delivery model; Splunk and Dynatrace monitoring at 99.999% uptime.',
+    ],
+  },
+  {
+    title: 'Solution Architect · Senior Solution Integrator',
+    company: 'Ericsson Group',
+    period: 'Jul 2011 – Apr 2019',
+    location: 'Stockholm / Gurgaon',
+    bullets: [
+      'Built IT governance framework for a 5G innovation programme.',
+      'Designed API layer and north/southbound interfaces in Go and Python within Docker/Kubernetes.',
+      'Represented Ericsson at IBC and Mobile World Congress as demo engineer.',
+    ],
+  },
+  {
+    title: 'Team Lead, IPTV Operations',
+    company: 'Alcatel-Lucent Managed Services',
+    period: '2010 – 2011',
+    location: '—',
+    bullets: ['Led IPTV operations and managed service delivery for enterprise clients.'],
+  },
+  {
+    title: 'Engineer, IPTV Services',
+    company: 'Smart Digivision',
+    period: '2008 – 2010',
+    location: '—',
+    bullets: ['Delivered IPTV engineering and integrations.'],
+  },
+];
+---
+<section id="experience" class="py-24 px-6 max-w-6xl mx-auto">
+  <h2 class="exp-heading text-3xl font-bold mb-16 text-center opacity-0">Experience</h2>
+  <div class="exp-body opacity-0">
+    <ExperienceTabs {roles} client:visible />
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.to('.exp-heading', { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { trigger: '#experience', start: 'top 80%' } });
+  gsap.to('.exp-body',    { opacity: 1, y: 0, duration: 0.7, scrollTrigger: { trigger: '#experience', start: 'top 75%' } });
+</script>
