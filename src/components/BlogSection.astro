@@ -3,9 +3,6 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
-function readingTime(body: string) {
-  return Math.max(1, Math.ceil(body.split(' ').length / 200));
-}
 ---
 <section id="blog" class="py-24 px-6 max-w-6xl mx-auto">
   <h2 class="blog-heading text-3xl font-bold mb-4 text-center opacity-0">Writing</h2>
