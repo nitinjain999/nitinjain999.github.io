@@ -1,21 +1,32 @@
 <script>
+  import { tick } from 'svelte';
   import { gsap } from 'gsap';
 
   let { roles = [] } = $props();
 
   let activeIdx = $state(0);
+  // Plain array — populated by bind:this, no reactivity needed.
+  let panelRefs: HTMLDivElement[] = [];
 
-  function selectTab(i) {
+  $effect(() => {
+    // Animate bullets for the initial tab on mount.
+    const panel = panelRefs[0];
+    if (panel) {
+      gsap.from(panel.querySelectorAll('li'), {
+        opacity: 0, y: 10, stagger: 0.07, duration: 0.35, ease: 'power2.out',
+      });
+    }
+  });
+
+  async function selectTab(i: number) {
     activeIdx = i;
-    // Animate bullets after Svelte updates the DOM
-    setTimeout(() => {
-      const panel = document.querySelector(`[data-panel="${i}"]`);
-      if (panel) {
-        gsap.from(panel.querySelectorAll('li'), {
-          opacity: 0, y: 10, stagger: 0.07, duration: 0.35, ease: 'power2.out',
-        });
-      }
-    }, 0);
+    await tick(); // wait for Svelte to render the newly active panel
+    const panel = panelRefs[i];
+    if (panel) {
+      gsap.from(panel.querySelectorAll('li'), {
+        opacity: 0, y: 10, stagger: 0.07, duration: 0.35, ease: 'power2.out',
+      });
+    }
   }
 </script>
 
@@ -42,7 +53,7 @@
   <div class="flex-1 md:pl-10 pt-6 md:pt-0">
     {#each roles as role, i}
       {#if activeIdx === i}
-        <div data-panel={i}>
+        <div bind:this={panelRefs[i]}>
           <h3 class="text-xl font-bold text-white mb-1">{role.title}</h3>
           <p class="text-cyan font-medium mb-1">{role.company}</p>
           <p class="text-white/40 text-sm mb-6">{role.period} · {role.location}</p>

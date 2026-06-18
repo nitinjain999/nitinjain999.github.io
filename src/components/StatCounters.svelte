@@ -4,15 +4,18 @@
 
   let { stats = [] } = $props();
 
-  let refs = $state([]);
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Plain array — bind:this populates it without triggering $effect re-runs.
+  let refs: HTMLSpanElement[] = [];
 
   $effect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    const triggers: ReturnType<typeof ScrollTrigger.create>[] = [];
     refs.forEach((el, i) => {
       if (!el) return;
       const target = stats[i].value;
       const isDecimal = target % 1 !== 0;
-      ScrollTrigger.create({
+      triggers.push(ScrollTrigger.create({
         trigger: el,
         start: 'top 85%',
         once: true,
@@ -27,8 +30,9 @@
             },
           });
         },
-      });
+      }));
     });
+    return () => { triggers.forEach(t => t.kill()); };
   });
 </script>
 
