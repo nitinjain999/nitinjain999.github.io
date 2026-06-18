@@ -46,6 +46,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <div id="scroll-progress" class="fixed top-0 left-0 h-[2px] z-[100] w-0 transition-none"
          style="background: linear-gradient(90deg, #00B4D8, #6366f1);"></div>
     <slot />
+
+    <!-- Visitor counter — bottom right -->
+    <div class="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-black/60 backdrop-blur-md text-white/30 text-[10px] font-mono hover:text-white/50 transition-colors duration-300">
+      <span class="w-1.5 h-1.5 rounded-full bg-cyan/50 animate-pulse inline-block"></span>
+      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnitinjain999.github.io&count_bg=%2300000000&title_bg=%2300000000&icon=&icon_color=%2300B4D8&title=visitors&edge_flat=true"
+           alt="visitor count"
+           class="h-3.5 opacity-60 hover:opacity-100 transition-opacity"
+           loading="lazy" />
+    </div>
   </body>
 </html>
 
