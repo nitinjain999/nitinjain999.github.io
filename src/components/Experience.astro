@@ -3,40 +3,19 @@ import ExperienceTabs from './ExperienceTabs.svelte';
 
 const roles = [
   {
-    title: 'Principal Platform Engineer',
-    company: 'Current Role',
-    period: 'Jun 2023 – Present',
-    location: 'Stockholm, Sweden',
-    bullets: [
-      'Designed and migrated the organisation to a Terraform-defined AWS Landing Zone.',
-      'Leading ongoing platform migration from OpenShift 4 to Amazon EKS.',
-      'Stood up a new cloud data platform; manage Doppler, Dynatrace and GitHub Enterprise as code.',
-      'Built CI/CD with GitHub composite actions and GitOps via FluxCD; secrets via Doppler.',
-      'Enforce platform-wide policy governance across clusters with OPA and Kyverno.',
-      'Advancing AIOps practices with Dynatrace active monitoring at 99.99%+ uptime.',
-    ],
-  },
-  {
-    title: 'CTO',
-    company: 'Favia IT Solutions AB',
-    period: 'Ongoing',
-    location: 'Stockholm, Sweden',
-    bullets: [
-      'Co-founded and operate a cloud and platform consultancy with my wife.',
-      'Lead technology strategy, architecture, and client delivery.',
-      'Offer select freelance engagements in platform engineering and cloud architecture.',
-    ],
-  },
-  {
     title: 'Senior Technical Account Manager',
     company: 'Amazon Web Services (AWS)',
     period: 'Jun 2021 – May 2023',
     location: 'Stockholm, Sweden',
+    logo: 'aws',
     bullets: [
-      'Trusted advisor on Enterprise Support to three of the largest Nordic enterprises.',
-      'Owned operational health, cost optimisation and Well-Architected reviews.',
-      'Led incident and escalation management for business-critical workloads.',
-      'Guided large-scale migration onto EKS, serverless, and IaC.',
+      'Sole TAM for three of the largest Nordic enterprises spanning logistics, telecom, and gaming, each running mission-critical workloads on AWS at scale.',
+      'Led FinOps programmes across all three accounts: rightsizing, Savings Plans, Reserved Instance strategy, and Compute Optimizer adoption, driving significant annual cost reductions without sacrificing performance.',
+      'Delivered Well-Architected Framework Reviews across reliability, security, cost, and performance pillars; produced remediation roadmaps adopted by engineering leads.',
+      'Owned monthly Operational Reviews tracking SLO burn, incident trends, and open risks, presenting board-level summaries to CTO and VP Engineering stakeholders.',
+      'Led P1 and P2 incident management: coordinated AWS service teams, maintained customer communication under pressure, and authored post-incident reports with root-cause analysis and prevention plans.',
+      'Managed executive escalations end-to-end, engaged AWS engineering leadership, drove resolution SLAs, and rebuilt customer confidence after critical outages.',
+      'Guided architecture decisions across EKS, serverless, and IaC adoption; translated business requirements into AWS reference architectures reviewed by Solutions Architects.',
     ],
   },
   {
@@ -44,21 +23,32 @@ const roles = [
     company: 'ATG (Aktiebolaget Trav och Galopp)',
     period: 'Apr 2019 – May 2021',
     location: 'Stockholm, Sweden',
+    logo: 'atg',
     bullets: [
-      'Led container adoption and migration to OpenShift 4.',
-      'Designed unified DevOps framework across on-prem and AWS.',
-      'Established GitOps delivery model; Splunk and Dynatrace monitoring at 99.999% uptime.',
+      'Drove OpenShift 3 adoption across the engineering organisation: designed the container platform strategy, onboarded development teams, and built internal standards for workload migration from legacy infrastructure.',
+      'Established GitOps delivery using FluxCD; Git became the single source of truth for all cluster state, eliminating manual kubectl applies in production.',
+      'Built CI/CD pipelines from commit to cluster, integrating code quality gates, security scanning, and automated rollouts via Flux.',
+      'Deployed and owned Dynatrace across the platform; configured full-stack observability, anomaly detection, and SLO tracking, maintaining 99.999% uptime on betting and racing workloads.',
+      'Led cloud adoption in parallel with the OpenShift programme, helped teams move workloads to AWS, and defined cloud-ready architecture patterns bridging on-prem and cloud operations.',
+      'Mentored trainees and new joiners in DevOps practices, container fundamentals, and GitOps workflows; ran internal workshops and paired directly with developers during onboarding.',
+      'Acted as the go-to platform advisor for developers, unblocking teams on OpenShift, Helm, and Flux and driving a culture of self-service platform adoption.',
     ],
   },
   {
     title: 'Solution Architect · Senior Solution Integrator',
     company: 'Ericsson Group',
-    period: 'Jul 2011 – Apr 2019',
-    location: 'Stockholm / Gurgaon',
+    period: 'Jan 2012 – Apr 2019',
+    location: 'Stockholm, Sweden / Gurgaon, India',
+    logo: 'ericsson',
     bullets: [
-      'Built IT governance framework for a 5G innovation programme.',
-      'Designed API layer and north/southbound interfaces in Go and Python within Docker/Kubernetes.',
-      'Represented Ericsson at IBC and Mobile World Congress as demo engineer.',
+      'Led IoT Orchestration and Accelerator platform integration across AWS, Azure, and OpenStack; delivered end-to-end IoT device provisioning, data collection, analytics, and service enablement for enterprise customers across SaaS, IaaS, and PaaS deployment models.',
+      'Designed and delivered a Private Cloudified LTE-in-a-Box solution, enabling operators to spin up a full LTE network stack in a single system for rapid trials; built the CI/CD automation using SaltStack, Ansible, Jenkins, and shell scripting on RedHat Linux.',
+      'Architected and deployed Traffic Optimisation solutions for STC (Saudi Arabia) and Swisscom (Switzerland); performed customer traffic profiling and solution tuning to maximise compression and throughput on live mobile networks.',
+      'Deployed and acceptance-tested Traffic Optimisation at Digi Malaysia, integrating the Ericsson Cloud Environment with optimisation components and conducting full traffic profiling and solution validation.',
+      'Led end-to-end integration of a Multi-Screen TV and Video on Demand platform for Bharti India: subscriber management, channel management, VOD, transcoding, encryption, CDN delivery, and consumption across STBs, iOS, and Android.',
+      'Delivered Multiscreen POC and CDN expansion for Bharti, coordinating third-party integrations including Envivio, Edgeware, Verimatrix DRM, OpenStream middleware, and HLS streaming origin infrastructure.',
+      'Installed and integrated a Multi-Screen Middleware lab trial system for TELUS, acting as both Solution Integrator and Solution Architect through concept to delivery.',
+      'Represented Ericsson at IBC and Mobile World Congress as a live demo engineer, showcasing platform capabilities to global operators and technology partners.',
     ],
   },
   {
@@ -66,6 +56,7 @@ const roles = [
     company: 'Alcatel-Lucent Managed Services',
     period: '2010 – 2011',
     location: '—',
+    logo: 'alcatel',
     bullets: ['Led IPTV operations and managed service delivery for enterprise clients.'],
   },
   {
@@ -73,12 +64,16 @@ const roles = [
     company: 'Smart Digivision',
     period: '2008 – 2010',
     location: '—',
+    logo: null,
     bullets: ['Delivered IPTV engineering and integrations.'],
   },
 ];
 ---
 <section id="experience" class="py-24 px-6 max-w-6xl mx-auto">
-  <h2 class="exp-heading text-3xl font-bold mb-16 text-center opacity-0">Experience</h2>
+  <div class="text-center mb-16">
+    <p class="eyebrow mb-3 opacity-0 exp-eyebrow">Career</p>
+    <h2 class="section-title text-white opacity-0 exp-heading">Experience</h2>
+  </div>
   <div class="exp-body opacity-0">
     <ExperienceTabs {roles} client:visible />
   </div>
@@ -95,7 +90,8 @@ const roles = [
     ctx = gsap.context(() => {
       gsap.registerPlugin(ScrollTrigger);
       const st = { trigger: '#experience', start: 'top 75%' };
-      gsap.fromTo('.exp-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.exp-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.exp-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: { ...st, start: 'top 80%' } });
       gsap.fromTo('.exp-body',    { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: st });
     });
   }

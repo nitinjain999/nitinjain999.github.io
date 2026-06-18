@@ -5,11 +5,16 @@
   let { roles = [] } = $props();
 
   let activeIdx = $state(0);
-  // Plain array — populated by bind:this, no reactivity needed.
   let panelRefs: HTMLDivElement[] = [];
 
+  const logoSrc: Record<string, string> = {
+    aws:      '/assets/logos/aws.svg',
+    ericsson: '/assets/logos/ericsson.svg',
+    alcatel:  '/assets/logos/alcatel.svg',
+    atg:      '/assets/logos/atg.svg',
+  };
+
   $effect(() => {
-    // Animate bullets for the initial tab on mount.
     const panel = panelRefs[0];
     if (panel) {
       gsap.from(panel.querySelectorAll('li'), {
@@ -20,7 +25,7 @@
 
   async function selectTab(i: number) {
     activeIdx = i;
-    await tick(); // wait for Svelte to render the newly active panel
+    await tick();
     const panel = panelRefs[i];
     if (panel) {
       gsap.from(panel.querySelectorAll('li'), {
@@ -31,20 +36,26 @@
 </script>
 
 <div class="flex flex-col md:flex-row gap-0">
-  <!-- Tab list -->
-  <div class="md:w-60 flex-shrink-0 flex md:flex-col overflow-x-auto md:overflow-visible
-              border-b md:border-b-0 md:border-r border-white/10 pb-0">
+  <!-- Tab list — vertical on mobile (accordion-style select), sidebar on desktop -->
+  <div class="md:w-64 flex-shrink-0 flex flex-col
+              border-b md:border-b-0 md:border-r border-white/10">
     {#each roles as role, i}
       <button
         onclick={() => selectTab(i)}
-        class="text-left px-5 py-3.5 text-sm font-medium whitespace-nowrap md:whitespace-normal
-               border-b-2 md:border-b-0 md:border-l-2 transition-all duration-200
+        class="text-left px-4 py-4 md:px-5 font-medium
+               border-l-2 transition-all duration-200 flex items-center gap-3 min-h-[56px]
                {activeIdx === i
                  ? 'border-cyan text-cyan bg-cyan/5'
                  : 'border-transparent text-white/40 hover:text-white/70 hover:bg-white/5'}"
       >
-        <div class="font-semibold leading-snug">{role.company}</div>
-        <div class="text-xs text-white/30 mt-0.5">{role.period}</div>
+        {#if role.logo && logoSrc[role.logo]}
+          <img src={logoSrc[role.logo]} alt={role.company}
+               class="w-7 h-7 md:w-8 md:h-8 object-contain flex-shrink-0 opacity-70" />
+        {/if}
+        <span>
+          <div class="font-semibold leading-snug text-xs md:text-xs">{role.company}</div>
+          <div class="text-[10px] text-white/30 mt-0.5">{role.period}</div>
+        </span>
       </button>
     {/each}
   </div>
@@ -54,9 +65,17 @@
     {#each roles as role, i}
       {#if activeIdx === i}
         <div bind:this={panelRefs[i]}>
-          <h3 class="text-xl font-bold text-white mb-1">{role.title}</h3>
-          <p class="text-cyan font-medium mb-1">{role.company}</p>
-          <p class="text-white/40 text-sm mb-6">{role.period} · {role.location}</p>
+          <div class="flex items-start gap-4 mb-6">
+            {#if role.logo && logoSrc[role.logo]}
+              <img src={logoSrc[role.logo]} alt={role.company}
+                   class="w-12 h-12 object-contain flex-shrink-0 mt-1 opacity-85" />
+            {/if}
+            <div>
+              <h3 class="text-xl font-bold text-white mb-1">{role.title}</h3>
+              <p class="text-cyan font-medium text-sm mb-1">{role.company}</p>
+              <p class="text-white/40 text-xs">{role.period} · {role.location}</p>
+            </div>
+          </div>
           <ul class="space-y-3">
             {#each role.bullets as bullet}
               <li class="flex gap-3 text-white/65 text-sm leading-relaxed">

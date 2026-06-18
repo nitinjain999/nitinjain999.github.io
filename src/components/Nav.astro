@@ -1,47 +1,127 @@
 ---
 const links = [
-  { href: '#about', label: 'About' },
-  { href: '#build', label: 'What I Build' },
+  { href: '#about',      label: 'About' },
+  { href: '#build',      label: 'Build' },
   { href: '#experience', label: 'Experience' },
-  { href: '#opensource', label: 'Open Source' },
-  { href: '#blog', label: 'Writing' },
-  { href: '#human', label: 'Beyond' },
-  { href: '#contact', label: 'Contact' },
+  { href: '#opensource', label: 'OSS' },
+  { href: '#blog',       label: 'Writing' },
+  { href: '#human',      label: 'Beyond' },
+  { href: '#contact',    label: 'Contact' },
 ];
 ---
-<nav id="nav" class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between transition-all duration-300">
-  <a href="#hero" class="text-cyan font-mono font-semibold text-sm tracking-widest hover:opacity-80 transition-opacity">NJ</a>
-  <ul class="hidden md:flex gap-8">
-    {links.map(l => (
-      <li>
-        <a href={l.href} class="text-sm text-white/50 hover:text-cyan transition-colors duration-200 font-medium">
-          {l.label}
-        </a>
-      </li>
-    ))}
-  </ul>
-  <a
-    href="mailto:nitin.solna@gmail.com"
-    class="hidden md:inline-flex items-center gap-2 text-xs font-mono px-4 py-2 border border-cyan/40 text-cyan rounded-lg hover:bg-cyan/10 transition-colors"
-  >
-    Hire me
-  </a>
+<nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#hero" class="font-mono font-bold text-base tracking-widest grad-text hover:opacity-80 transition-opacity">NJ</a>
+
+    <!-- Desktop links -->
+    <ul class="hidden md:flex items-center gap-1">
+      {links.map(l => (
+        <li>
+          <a href={l.href}
+             class="nav-link relative text-xs font-medium text-white/45 hover:text-white transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/5">
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <a href="mailto:nitin.solna@gmail.com"
+         class="hidden md:inline-flex items-center gap-1.5 text-xs font-mono px-4 py-2 rounded-lg border border-cyan/30 text-cyan hover:bg-cyan/8 hover:border-cyan/60 transition-all duration-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></span>
+        Let's talk
+      </a>
+
+      <!-- Hamburger (mobile only) -->
+      <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false"
+              class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg hover:bg-white/8 transition-colors">
+        <span class="ham-line block w-5 h-0.5 bg-white/70 transition-all duration-300 origin-center"></span>
+        <span class="ham-line block w-5 h-0.5 bg-white/70 transition-all duration-300"></span>
+        <span class="ham-line block w-5 h-0.5 bg-white/70 transition-all duration-300 origin-center"></span>
+      </button>
+    </div>
+  </div>
 </nav>
+
+<!-- Mobile menu overlay -->
+<div id="mobile-menu"
+     class="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6
+            opacity-0 pointer-events-none transition-all duration-300 md:hidden">
+  {links.map(l => (
+    <a href={l.href}
+       class="mobile-nav-link text-2xl font-semibold text-white/60 hover:text-white transition-colors duration-200 py-2">
+      {l.label}
+    </a>
+  ))}
+  <a href="mailto:nitin.solna@gmail.com"
+     class="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-cyan/30 text-cyan font-mono text-sm hover:bg-cyan/8 transition-all">
+    <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></span>
+    Let's talk
+  </a>
+</div>
 
 <style>
   nav.scrolled {
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    background: rgba(8,8,16,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  nav.scrolled .nav-link.active {
+    color: #00B4D8;
+  }
+
+  #nav-toggle.open .ham-line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  #nav-toggle.open .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  #nav-toggle.open .ham-line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  #mobile-menu.open {
+    opacity: 1;
+    pointer-events: auto;
   }
 </style>
 
 <script>
-  const nav = document.getElementById('nav');
+  const nav    = document.getElementById('nav');
+  const toggle = document.getElementById('nav-toggle');
+  const menu   = document.getElementById('mobile-menu');
+
+  // Scroll → nav background
   window.addEventListener('scroll', () => {
-    nav?.classList.toggle('scrolled', window.scrollY > 50);
+    nav?.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
+
+  // Hamburger toggle
+  function toggleMenu(open: boolean) {
+    toggle?.classList.toggle('open', open);
+    menu?.classList.toggle('open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = menu?.classList.contains('open');
+    toggleMenu(!isOpen);
+  });
+
+  // Close on link click
+  menu?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
+  });
+
+  // Active nav link on scroll
+  document.addEventListener('astro:page-load', () => {
+    const sections  = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('.nav-link');
+    const observer  = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(l => l.classList.remove('active', '!text-cyan'));
+          document.querySelector(`.nav-link[href="#${entry.target.id}"]`)
+            ?.classList.add('active', '!text-cyan');
+        }
+      });
+    }, { threshold: 0.15 });
+    sections.forEach(s => observer.observe(s));
+  });
 </script>

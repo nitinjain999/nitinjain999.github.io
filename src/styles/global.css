@@ -1,9 +1,27 @@
 @import "tailwindcss";
+
+html { scroll-behavior: smooth; }
+
 @plugin "@tailwindcss/typography";
+
 @theme {
-  --color-background: #0a0a0f;
+  --color-background: #080810;
   --color-cyan: #00B4D8;
   --color-indigo: #6366f1;
   --font-family-sans: 'Inter', system-ui, sans-serif;
   --font-family-mono: 'Fira Code', monospace;
+}
+
+@layer base {
+  /* Single fluid root — scales 16px mobile → 18px desktop */
+  html {
+    font-size: clamp(15px, 1vw + 13px, 18px);
+  }
+
+  body {
+    background: #080810;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.65;
+  }
 }
