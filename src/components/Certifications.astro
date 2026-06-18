@@ -24,22 +24,26 @@ const certs = [
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  let ctx: gsap.Context | undefined;
+
   function init() {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.fromTo('.certs-heading',
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.6,
-        scrollTrigger: { trigger: '#certs', start: 'top 80%' } });
-    gsap.fromTo(
-      gsap.utils.toArray('.cert-badge'),
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1, y: 0, duration: 0.45,
-        stagger: (i) => i * 0.07,
-        scrollTrigger: { trigger: '#certs', start: 'top 80%' },
-      }
-    );
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.fromTo('.certs-heading',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.6,
+          scrollTrigger: { trigger: '#certs', start: 'top 80%' } });
+      gsap.fromTo(
+        gsap.utils.toArray('.cert-badge'),
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 0.45,
+          stagger: (i) => i * 0.07,
+          scrollTrigger: { trigger: '#certs', start: 'top 80%' },
+        }
+      );
+    });
   }
 
   document.addEventListener('astro:page-load', init);

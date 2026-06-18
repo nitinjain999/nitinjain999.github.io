@@ -21,7 +21,7 @@ const statements = [
   <p class="human-sub text-white/50 text-center mb-12 opacity-0">The person behind the platform.</p>
 
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16">
-    {photos.map((photo, i) => (
+    {photos.map((photo) => (
       <div class="photo-item opacity-0 relative group overflow-hidden rounded-xl aspect-square">
         <picture>
           <source srcset={`/assets/photos/${photo.src}.webp`} type="image/webp" />
@@ -44,7 +44,7 @@ const statements = [
   </div>
 
   <div class="grid md:grid-cols-2 gap-5">
-    {statements.map((s, i) => (
+    {statements.map((s) => (
       <div class="statement-item glass p-5 flex items-start gap-4 opacity-0">
         <span class="text-2xl flex-shrink-0">{s.icon}</span>
         <p class="text-white/65 leading-relaxed">{s.text}</p>
@@ -57,33 +57,30 @@ const statements = [
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  let ctx: gsap.Context | undefined;
+
   function init() {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-    gsap.registerPlugin(ScrollTrigger);
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#human', start: 'top 78%' };
+      gsap.fromTo('.human-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
+      gsap.fromTo('.human-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
 
-    const st = { trigger: '#human', start: 'top 78%' };
-    gsap.fromTo('.human-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
-    gsap.fromTo('.human-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.photo-item'),
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.5, stagger: 0.06,
+          scrollTrigger: { trigger: '#human', start: 'top 73%' } }
+      );
 
-    gsap.fromTo(
-      gsap.utils.toArray('.photo-item'),
-      { opacity: 0, scale: 0.92 },
-      {
-        opacity: 1, scale: 1, duration: 0.5,
-        stagger: (i) => i * 0.06,
-        scrollTrigger: { trigger: '#human', start: 'top 73%' },
-      }
-    );
-
-    gsap.fromTo(
-      gsap.utils.toArray('.statement-item'),
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1, y: 0, duration: 0.5,
-        stagger: (i) => i * 0.1,
-        scrollTrigger: { trigger: '#human', start: 'top 60%' },
-      }
-    );
+      gsap.fromTo(
+        gsap.utils.toArray('.statement-item'),
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1,
+          scrollTrigger: { trigger: '#human', start: 'top 60%' } }
+      );
+    });
   }
 
   document.addEventListener('astro:page-load', init);

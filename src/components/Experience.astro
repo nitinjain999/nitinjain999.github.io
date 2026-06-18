@@ -88,12 +88,16 @@ const roles = [
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  let ctx: gsap.Context | undefined;
+
   function init() {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-    gsap.registerPlugin(ScrollTrigger);
-    const st = { trigger: '#experience', start: 'top 75%' };
-    gsap.fromTo('.exp-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });
-    gsap.fromTo('.exp-body',    { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: st });
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#experience', start: 'top 75%' };
+      gsap.fromTo('.exp-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.exp-body',    { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: st });
+    });
   }
 
   document.addEventListener('astro:page-load', init);

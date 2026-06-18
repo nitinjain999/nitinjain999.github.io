@@ -33,23 +33,27 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  let ctx: gsap.Context | undefined;
+
   function init() {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-    gsap.registerPlugin(ScrollTrigger);
-    const st = { trigger: '#blog', start: 'top 78%' };
-    gsap.fromTo('.blog-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
-    gsap.fromTo('.blog-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
-    gsap.fromTo(
-      gsap.utils.toArray('.blog-card'),
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1, y: 0, duration: 0.55,
-        stagger: (i) => i * 0.1,
-        scrollTrigger: { trigger: '#blog', start: 'top 74%' },
-      }
-    );
-    gsap.fromTo('.blog-link', { opacity: 0 }, { opacity: 1, duration: 0.5,
-      scrollTrigger: { trigger: '#blog', start: 'top 68%' } });
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#blog', start: 'top 78%' };
+      gsap.fromTo('.blog-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
+      gsap.fromTo('.blog-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.blog-card'),
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0, duration: 0.55,
+          stagger: (i) => i * 0.1,
+          scrollTrigger: { trigger: '#blog', start: 'top 74%' },
+        }
+      );
+      gsap.fromTo('.blog-link', { opacity: 0 }, { opacity: 1, duration: 0.5,
+        scrollTrigger: { trigger: '#blog', start: 'top 68%' } });
+    });
   }
 
   document.addEventListener('astro:page-load', init);

@@ -30,22 +30,26 @@ const domains = [
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  function init() {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-    gsap.registerPlugin(ScrollTrigger);
-    const st = { trigger: '#build', start: 'top 78%' };
-    gsap.fromTo('.build-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
-    gsap.fromTo('.build-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+  let ctx: gsap.Context | undefined;
 
-    gsap.fromTo(
-      gsap.utils.toArray('.domain-card'),
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1, y: 0, duration: 0.6,
-        stagger: (i) => i * 0.08,
-        scrollTrigger: { trigger: '#build', start: 'top 72%' },
-      }
-    );
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#build', start: 'top 78%' };
+      gsap.fromTo('.build-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: st });
+      gsap.fromTo('.build-sub',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+
+      gsap.fromTo(
+        gsap.utils.toArray('.domain-card'),
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 0.6,
+          stagger: (i) => i * 0.08,
+          scrollTrigger: { trigger: '#build', start: 'top 72%' },
+        }
+      );
+    });
   }
 
   document.addEventListener('astro:page-load', init);
