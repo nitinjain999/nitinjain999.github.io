@@ -48,15 +48,25 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <slot />
 
     <!-- Visitor counter — bottom right -->
-    <a href="https://hits.seeyoufarm.com"
-       target="_blank" rel="noopener noreferrer"
-       class="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-black/60 backdrop-blur-md hover:border-cyan/30 transition-colors duration-300 group">
-      <span class="w-1.5 h-1.5 rounded-full bg-cyan/50 animate-pulse inline-block"></span>
-      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnitinjain999.github.io&count_bg=%2300B4D8&title_bg=%23080810&icon=&icon_color=%23FFFFFF&title=visitors&edge_flat=true"
-           alt="visitor count"
-           class="h-4"
-           loading="lazy" />
-    </a>
+    <div id="visit-counter" class="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-black/60 backdrop-blur-md text-[11px] font-mono text-white/40 opacity-0 transition-opacity duration-500">
+      <span class="w-1.5 h-1.5 rounded-full bg-cyan/60 animate-pulse inline-block flex-shrink-0"></span>
+      <span id="visit-count">—</span>
+      <span class="text-white/20">views</span>
+    </div>
+
+    <script>
+      fetch('https://hits.seeyoufarm.com/api/count/incr/badge.json?url=https%3A%2F%2Fnitinjain999.github.io')
+        .then(r => r.json())
+        .then(d => {
+          const el = document.getElementById('visit-count');
+          const counter = document.getElementById('visit-counter');
+          if (el && d.total !== undefined) {
+            el.textContent = Number(d.total).toLocaleString();
+            if (counter) counter.style.opacity = '1';
+          }
+        })
+        .catch(() => {});
+    </script>
   </body>
 </html>
 
