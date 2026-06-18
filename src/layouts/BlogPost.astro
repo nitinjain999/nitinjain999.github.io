@@ -1,0 +1,50 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  tags?: string[];
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = '',
+  date,
+  tags = [],
+  ogImage,
+} = Astro.props;
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+<Base title={title} description={description} ogImage={ogImage}>
+  <article class="max-w-2xl mx-auto px-4 py-16">
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold tracking-tight mb-3">{title}</h1>
+      <div class="flex items-center gap-4 text-sm text-white/50">
+        <time datetime={date.toISOString()}>{formattedDate}</time>
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span class="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      {description && (
+        <p class="mt-4 text-white/60 text-base leading-relaxed">{description}</p>
+      )}
+    </header>
+    <div class="prose prose-invert prose-cyan max-w-none">
+      <slot />
+    </div>
+  </article>
+</Base>
