@@ -1,5 +1,4 @@
 ---
-// Hero section — full-viewport animated mesh gradient with GSAP reveals
 ---
 
 <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -7,56 +6,76 @@
   <!-- Animated mesh gradient background -->
   <div id="hero-mesh" class="absolute inset-0 z-0" aria-hidden="true">
     <div class="mesh-bg absolute inset-0"></div>
+    <!-- Extra depth blobs -->
+    <div class="blob-1 absolute w-[600px] h-[600px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle,rgba(0,180,216,0.12) 0%,transparent 70%);top:-100px;left:-150px;"></div>
+    <div class="blob-2 absolute w-[500px] h-[500px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);bottom:-50px;right:-100px;"></div>
+    <!-- Subtle grid overlay -->
+    <div class="absolute inset-0 opacity-[0.03]"
+         style="background-image:linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px);background-size:60px 60px;"></div>
   </div>
 
-  <!-- Gradient fade to background at bottom -->
+  <!-- Gradient fade at bottom -->
   <div class="absolute bottom-0 left-0 right-0 h-48 z-10 bg-gradient-to-t from-background to-transparent pointer-events-none" aria-hidden="true"></div>
 
   <!-- Content -->
-  <div class="relative z-20 flex flex-col items-center text-center px-6 max-w-4xl mx-auto">
+  <div class="relative z-20 flex flex-col items-center text-center px-6 max-w-5xl mx-auto w-full">
 
-    <!-- Freelance badge -->
-    <div
-      id="hero-badge"
-      class="opacity-0 mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan/30 bg-cyan/5 text-cyan text-xs font-mono tracking-wide"
-    >
-      <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse inline-block"></span>
-      Open for freelance
+    <!-- Location + status row -->
+    <div id="hero-meta" class="opacity-0 flex flex-wrap items-center justify-center gap-3 mb-8">
+      <span class="inline-flex items-center gap-1.5 text-xs font-mono text-white/35">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 8 4.25a1.75 1.75 0 0 1 0 3.5z" fill="currentColor"/></svg>
+        Stockholm, Sweden
+      </span>
+      <span class="text-white/15">·</span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-cyan/25 bg-cyan/5 text-cyan text-xs font-mono tracking-wide">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse inline-block"></span>
+        Open for interesting projects
+      </span>
+      <span class="text-white/15">·</span>
+      <span class="text-xs font-mono text-white/35">15+ yrs experience</span>
     </div>
 
     <!-- Name heading — split into character spans by GSAP -->
-    <h1 id="hero-name" class="opacity-0 text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-4 overflow-hidden">
+    <h1 id="hero-name" class="opacity-0 font-extrabold tracking-tight mb-5 leading-none"
+        style="font-size:clamp(4rem,12vw,8.5rem);">
       Nitin Jain
     </h1>
 
-    <!-- Title -->
-    <p id="hero-title" class="opacity-0 text-xl md:text-2xl text-white/60 font-light mb-6">
-      Principal Platform Engineer
+    <!-- Title with gradient accent -->
+    <p id="hero-title" class="opacity-0 font-light mb-3"
+       style="font-size:clamp(1.25rem,2.8vw,1.75rem);">
+      <span class="text-white/50">Principal</span>
+      <span class="grad-text font-semibold"> Platform Engineer</span>
     </p>
 
     <!-- Typewriter tagline -->
-    <p id="hero-tagline" class="min-h-[3rem] text-base md:text-lg text-white/40 font-mono mb-10 max-w-2xl"></p>
+    <p id="hero-tagline" class="min-h-[2.5rem] text-white/35 font-mono mb-10 max-w-2xl"
+       style="font-size:clamp(0.85rem,1.4vw,1rem);"></p>
 
-    <!-- CTAs -->
-    <div id="hero-ctas" class="opacity-0 flex flex-wrap gap-4 justify-center">
-      <a
-        href="#blog"
-        class="px-6 py-3 rounded-lg bg-cyan text-black font-semibold text-sm hover:opacity-90 transition-opacity"
-      >
-        Read the Blog
-      </a>
-      <a
-        href="/assets/nitin-jain-cv.pdf"
-        download
-        class="px-6 py-3 rounded-lg border border-white/20 text-white text-sm font-semibold hover:border-cyan/50 hover:text-cyan transition-colors"
-      >
-        Download CV
-      </a>
-      <a
-        href="#contact"
-        class="px-6 py-3 rounded-lg border border-white/20 text-white text-sm font-semibold hover:border-cyan/50 hover:text-cyan transition-colors"
-      >
+    <!-- Tech stack pills -->
+    <div id="hero-stack" class="opacity-0 flex flex-wrap justify-center gap-2 mb-12">
+      {['EKS', 'Terraform', 'FluxCD', 'GitHub Actions', 'Datadog', 'AWS', 'Kubernetes', 'GitOps', 'OpenShift', 'Helm', 'ArgoCD', 'Kyverno', 'KEDA', 'Linkerd', 'OPA', 'Dynatrace', 'Python', 'Bash'].map(t => (
+        <span class="font-mono px-3 py-1 rounded-full border border-cyan/20 text-cyan/70 bg-cyan/[0.04] hover:border-cyan/50 hover:text-cyan hover:bg-cyan/[0.08] transition-colors duration-200"
+              style="font-size:clamp(0.7rem,1vw,0.8rem);">
+          {t}
+        </span>
+      ))}
+    </div>
+
+    <!-- CTAs — primary + one secondary only -->
+    <div id="hero-ctas" class="opacity-0 flex flex-wrap gap-3 justify-center">
+      <a href="#contact"
+         onclick="document.getElementById('contact')?.scrollIntoView({behavior:'smooth'}); return false;"
+         class="rounded-xl font-semibold text-black transition-all duration-200 hover:scale-105 active:scale-95"
+         style="padding:0.8em 2em;font-size:clamp(0.85rem,1.2vw,1rem);background:linear-gradient(135deg,#00B4D8,#6366f1);">
         Let's Connect
+      </a>
+      <a href="#experience"
+         class="rounded-xl border border-white/20 text-white/90 font-medium hover:border-cyan/40 hover:text-white transition-all duration-200"
+         style="padding:0.8em 2em;font-size:clamp(0.85rem,1.2vw,1rem);">
+        View Experience
       </a>
     </div>
 
@@ -64,64 +83,58 @@
 
   <!-- Scroll indicator -->
   <div id="hero-scroll" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-0">
-    <span class="text-[10px] font-mono tracking-[0.25em] text-white/30 uppercase">Scroll</span>
-    <div class="w-px h-12 bg-gradient-to-b from-cyan to-transparent scroll-line"></div>
+    <span class="text-[9px] font-mono tracking-[0.3em] text-white/20 uppercase">Scroll</span>
+    <div class="w-px h-10 bg-gradient-to-b from-cyan/60 to-transparent scroll-line"></div>
   </div>
 
 </section>
 
 <style>
-  /* Animated mesh gradient */
   .mesh-bg {
     background:
-      radial-gradient(ellipse 80% 60% at 20% 40%, rgba(0,180,216,0.14) 0%, transparent 70%),
-      radial-gradient(ellipse 70% 50% at 80% 60%, rgba(99,102,241,0.18) 0%, transparent 70%);
-    animation: meshShift 12s ease-in-out infinite alternate;
+      radial-gradient(ellipse 80% 60% at 15% 40%, rgba(0,180,216,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse 70% 60% at 85% 60%, rgba(99,102,241,0.22) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 90%, rgba(0,180,216,0.08) 0%, transparent 60%);
+    animation: meshShift 14s ease-in-out infinite alternate;
     will-change: transform;
   }
 
   @keyframes meshShift {
-    0%   { transform: translate(0px, 0px) scale(1); }
-    33%  { transform: translate(20px, -15px) scale(1.04); }
-    66%  { transform: translate(-15px, 20px) scale(0.97); }
-    100% { transform: translate(10px, 10px) scale(1.02); }
+    0%   { transform: translate(0px,   0px)   scale(1);    }
+    33%  { transform: translate(25px,  -20px) scale(1.05); }
+    66%  { transform: translate(-20px,  25px) scale(0.96); }
+    100% { transform: translate(12px,   12px) scale(1.03); }
   }
 
-  /* Scroll indicator line animation */
   .scroll-line {
     animation: scrollPulse 2s ease-in-out infinite;
   }
-
   @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    0%, 100% { opacity: 0.3; transform: scaleY(1);   }
     50%       { opacity: 1;   transform: scaleY(0.7); }
   }
 
-  /* Character spans created by GSAP — clip overflow so translate-y-full hides them */
   #hero-name .char-wrap {
     display: inline-block;
     overflow: hidden;
-    line-height: 1.1;
+    line-height: 1.05;
     vertical-align: bottom;
   }
   #hero-name .char {
     display: inline-block;
-    transform: translateY(100%);
+    transform: translateY(105%);
     opacity: 0;
   }
-  /* Preserve spaces */
   #hero-name .char-space {
     display: inline-block;
-    width: 0.3em;
+    width: 0.28em;
   }
 </style>
 
 <script>
   import { gsap } from 'gsap';
 
-  // ── Ensure DOM is ready ──────────────────────────────────────────────────────
   document.addEventListener('astro:page-load', init);
-  // Also run on first load (no View Transition fired)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -133,10 +146,10 @@
     if (!nameEl || nameEl.dataset.heroInit === '1') return;
     nameEl.dataset.heroInit = '1';
 
-    // ── Split h1 into character spans ─────────────────────────────────────────
+    // Split into char spans — space gets fixed-width span so "Nitin Jain" stays two words
     const originalText = nameEl.textContent ?? '';
     nameEl.innerHTML = '';
-    nameEl.style.opacity = '1'; // override Tailwind opacity-0; GSAP will handle chars
+    nameEl.style.opacity = '1';
 
     for (const ch of originalText) {
       if (ch === ' ') {
@@ -157,87 +170,58 @@
 
     const chars = nameEl.querySelectorAll<HTMLElement>('.char');
 
-    // ── GSAP master timeline ───────────────────────────────────────────────────
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    // Badge at 0.75s
-    tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.6 }, 0.75);
-
-    // Characters from 0.1s, 0.05s stagger
-    tl.to(chars, { y: 0, opacity: 1, duration: 0.6, stagger: 0.05 }, 0.1);
-
-    // Title: fade-up from y:20 at 0.6s
-    tl.fromTo(
-      '#hero-title',
-      { y: 20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.7 },
-      0.6,
-    );
-
+    // Meta row
+    tl.to('#hero-meta',   { opacity: 1, y: 0, duration: 0.6 }, 0.2);
+    // Characters
+    tl.to(chars,          { y: 0, opacity: 1, duration: 0.65, stagger: 0.04 }, 0.35);
+    // Title
+    tl.fromTo('#hero-title',   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, 0.7);
+    // Stack pills
+    tl.to('#hero-stack',  { opacity: 1, duration: 0.5 }, 1.0);
     // CTAs
-    tl.to('#hero-ctas', { opacity: 1, y: 0, duration: 0.6 }, 1.1);
+    tl.to('#hero-ctas',   { opacity: 1, duration: 0.5 }, 1.15);
+    // Scroll
+    tl.to('#hero-scroll', { opacity: 1, duration: 0.5 }, 1.4);
 
-    // Scroll indicator
-    tl.to('#hero-scroll', { opacity: 1, duration: 0.6 }, 1.4);
-
-    // ── Typewriter tagline ─────────────────────────────────────────────────────
+    // Typewriter
     const lines = [
-      'I build the cloud platform that hundreds of engineers ship on every day.',
+      'I build the cloud platform hundreds of engineers ship on every day.',
       "If it's not in Git, it doesn't exist.",
       "I don't follow platform best practices — I write them.",
     ];
-
     const tagline = document.getElementById('hero-tagline');
     if (tagline) {
-      let lineIdx = 0;
-      let charIdx = 0;
-      let typing = true;
+      let lineIdx = 0, charIdx = 0;
       let typeTimer: ReturnType<typeof setTimeout>;
 
       function typeChar() {
         if (!tagline) return;
-        if (typing) {
-          if (charIdx <= lines[lineIdx].length) {
-            tagline.textContent = lines[lineIdx].slice(0, charIdx);
-            charIdx++;
-            typeTimer = setTimeout(typeChar, 35);
-          } else {
-            // Hold for 3s then fade out
-            typeTimer = setTimeout(() => {
-              gsap.to(tagline, {
-                opacity: 0,
-                duration: 0.4,
-                onComplete: () => {
-                  tagline.textContent = '';
-                  tagline.style.opacity = '1';
-                  lineIdx = (lineIdx + 1) % lines.length;
-                  charIdx = 0;
-                  typeTimer = setTimeout(typeChar, 200);
-                },
-              });
-            }, 3000);
-          }
+        if (charIdx <= lines[lineIdx].length) {
+          tagline.textContent = lines[lineIdx].slice(0, charIdx++);
+          typeTimer = setTimeout(typeChar, 48);
+        } else {
+          typeTimer = setTimeout(() => {
+            gsap.to(tagline, { opacity: 0, duration: 0.4, onComplete: () => {
+              tagline.textContent = '';
+              tagline.style.opacity = '1';
+              lineIdx = (lineIdx + 1) % lines.length;
+              charIdx = 0;
+              typeTimer = setTimeout(typeChar, 200);
+            }});
+          }, 3000);
         }
       }
-
-      // Start typewriter after title appears (~1.3s into timeline)
-      typeTimer = setTimeout(typeChar, 1300);
+      typeTimer = setTimeout(typeChar, 1400);
     }
 
-    // ── Gyroscope parallax (mobile) ────────────────────────────────────────────
+    // Gyroscope parallax (mobile)
     const mesh = document.getElementById('hero-mesh');
     if (mesh && window.DeviceOrientationEvent) {
-      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-      if (isMobile) {
+      if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
         window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
-          const beta  = e.beta  ?? 0;   // front-back tilt
-          const gamma = e.gamma ?? 0;   // left-right tilt
-          gsap.to(mesh, {
-            x: gamma * 1.5,
-            y: beta  * 1.5,
-            duration: 0.8,
-            ease: 'power1.out',
-          });
+          gsap.to(mesh, { x: (e.gamma ?? 0) * 1.5, y: (e.beta ?? 0) * 1.5, duration: 0.8, ease: 'power1.out' });
         }, { passive: true });
       }
     }
