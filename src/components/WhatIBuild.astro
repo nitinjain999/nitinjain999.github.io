@@ -1,0 +1,65 @@
+---
+const domains = [
+  { icon: '⚙️', title: 'Platform Engineering',  desc: 'Golden paths on EKS & OpenShift. FluxCD, Linkerd, KEDA.', accent: '#00B4D8' },
+  { icon: '🔁', title: 'DevOps & CI/CD',         desc: 'Self-shipping pipelines: GitHub Actions, FluxCD, Doppler.', accent: '#6366f1' },
+  { icon: '⬅️', title: 'Shift-Left Security',    desc: 'Security, policy and quality gates in the pull request.', accent: '#00B4D8' },
+  { icon: '🏢', title: 'Cloud Landing Zones',    desc: 'Multi-account AWS & Azure, all in Terraform.', accent: '#6366f1' },
+  { icon: '🛡️', title: 'Policy as Code',         desc: 'OPA, Kyverno and Gatekeeper guardrails at admission time.', accent: '#00B4D8' },
+  { icon: '📡', title: 'Observability & SRE',    desc: 'SLOs, distributed tracing and AIOps on Datadog & Dynatrace.', accent: '#6366f1' },
+  { icon: '💰', title: 'FinOps',                 desc: 'Cloud cost visibility and optimisation built into the platform.', accent: '#00B4D8' },
+  { icon: '🤖', title: 'AI × Platform',          desc: 'Claude Code skills and LLM ops in production environments.', accent: '#6366f1' },
+  { icon: '☁️', title: 'Edge & CDN',             desc: 'Global CDN, WAF and DNS at the edge.', accent: '#00B4D8' },
+];
+---
+<section id="build" class="relative py-28 px-6 overflow-hidden">
+  <!-- Ambient glow -->
+  <div class="glow-blob w-96 h-96 bg-indigo/10 top-0 left-1/4" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 build-eyebrow">Domains</p>
+      <h2 class="section-title text-white mb-4 opacity-0 build-heading">What I Build</h2>
+      <p class="text-white/40 text-base max-w-xl mx-auto opacity-0 build-sub">
+        The problems I own, operate, and care deeply about.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {domains.map((d, i) => (
+        <div class="domain-card opacity-0 group relative p-6 rounded-2xl border border-white/6 bg-white/[0.025] hover:border-white/12 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden">
+          <!-- Card top accent line -->
+          <div class="absolute top-0 left-6 right-6 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+               style={`background: linear-gradient(90deg, transparent, ${d.accent}60, transparent);`}></div>
+          <div class="text-2xl mb-4">{d.icon}</div>
+          <h3 class="font-semibold text-white text-base mb-2 tracking-tight">{d.title}</h3>
+          <p class="text-white/45 text-sm leading-relaxed">{d.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#build', start: 'top 78%' };
+      gsap.fromTo('.build-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.build-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.build-sub',     { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1,  scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.domain-card'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, scrollTrigger: { trigger: '#build', start: 'top 72%' } }
+      );
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

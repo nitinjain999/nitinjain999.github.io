@@ -1,0 +1,137 @@
+---
+import StatCounters from './StatCounters.svelte';
+
+const stats = [
+  { value: 15, suffix: '+', label: 'Years Experience' },
+  { value: 40, suffix: '+', label: 'AWS Accounts Managed' },
+  { value: 99.99, suffix: '%', label: 'Platform Uptime' },
+  { value: 100, suffix: 's', label: 'Engineers Served Daily' },
+];
+---
+<section id="about" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-[500px] h-[400px] bg-cyan/6 top-0 right-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 about-eyebrow">About</p>
+      <h2 class="section-title text-white opacity-0 about-heading">The Engineer Behind the Platform</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-16 items-start mb-16">
+      <div class="about-left opacity-0 flex flex-col items-center md:items-start gap-8">
+        <div class="relative">
+          <div class="absolute -inset-0.5 rounded-full opacity-40"
+               style="background: linear-gradient(135deg, #00B4D8, #6366f1); filter: blur(8px);"></div>
+          <img src="/assets/photos/avatar.webp" alt="Nitin Jain"
+               width="160" height="160" loading="eager"
+               class="relative w-40 h-40 rounded-full border border-white/10 object-cover" />
+        </div>
+        <div class="text-white/55 leading-relaxed space-y-4 text-center md:text-left text-[15px]">
+          <p>
+            Principal Platform Engineer based in Stockholm. Fifteen years building infrastructure,
+            starting in telecom, through cloud architecture at AWS, into platform engineering at scale.
+          </p>
+          <p>
+            Two principles guide everything: if it is not in Git, it does not exist; and if it is not
+            automated, it is a future incident waiting to happen.
+          </p>
+          <p>
+            That mindset has produced 60+ AWS landing zones, multiple EKS migrations, GitOps workflows,
+            and CI/CD platforms that let engineering teams ship safely without touching a runbook.
+            I care about platforms that are secure by default, observable from day one, cost-aware,
+            and simple enough that developers actually want to use them.
+          </p>
+          <p class="text-cyan/80 font-mono text-sm">
+            Co-founder, Favia IT Solutions AB.
+          </p>
+        </div>
+      </div>
+
+      <div class="about-right opacity-0">
+        <StatCounters {stats} client:visible />
+      </div>
+    </div>
+
+    <!-- Cert badges — full width row, each linked to Credly for verification -->
+    <div class="about-badges opacity-0 pt-8 border-t border-white/6">
+      <p class="text-center text-xs font-mono text-white/25 tracking-widest uppercase mb-6">Certifications — click to verify</p>
+      <div class="flex flex-wrap justify-center items-start gap-6 md:gap-8">
+
+        <a href="https://www.credly.com/badges/7cf00e9d-1e4c-415a-aaf9-a46acb12e065/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-3 w-[96px] opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/aws-sa-associate.png" alt="AWS Certified Solutions Architect – Associate" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">Solutions Architect Associate</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/8dba2993-6fd9-44e7-8397-6e8e6df86702/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-3 w-[96px] opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/aws-devops-pro.png" alt="AWS Certified DevOps Engineer – Professional" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">DevOps Engineer Professional</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/1f9d3678-3e1e-4603-8d50-f1e823597c1e/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-3 w-[96px] opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/aws-security-specialty.png" alt="AWS Certified Security – Specialty" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">Security Specialty</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/ef38a92a-2a80-43b3-9324-d0c07dfaa01c/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-3 w-[96px] opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/aws-partner-economics.png" alt="AWS Partner: Cloud Economics Essentials" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">Cloud Economics Essentials</span>
+        </a>
+
+        <a href="https://www.credly.com/org/the-linux-foundation/badge/cka-certified-kubernetes-administrator"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-3 w-[96px] opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/cka.png" alt="Certified Kubernetes Administrator (CKA)" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">CKA Certified Kubernetes Admin</span>
+        </a>
+
+        <div class="flex flex-col items-center gap-3 w-[96px] opacity-55">
+          <div class="w-[80px] h-[80px] flex items-center justify-center">
+            <img src="/assets/badges/ms-associate.svg" alt="Microsoft Certified: Azure Infrastructure Solutions (70-533)" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-[11px] font-mono text-cyan/80 text-center leading-snug">Azure Infrastructure (70-533)</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#about', start: 'top 75%' };
+      gsap.fromTo('.about-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.about-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.about-left',    { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, scrollTrigger: st });
+      gsap.fromTo('.about-right',   { opacity: 0, x: 40  }, { opacity: 1, x: 0, duration: 0.8, delay: 0.15, scrollTrigger: st });
+      gsap.fromTo('.about-badges',  { opacity: 0, y: 30  }, { opacity: 1, y: 0, duration: 0.7, delay: 0.3, scrollTrigger: st });
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

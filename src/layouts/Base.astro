@@ -1,0 +1,131 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import '@fontsource/fira-code/400.css';
+import '@fontsource/fira-code/500.css';
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+const {
+  title = 'Nitin Jain — Principal Platform Engineer',
+  description = 'I build the cloud platform that hundreds of engineers ship on every day.',
+  ogImage = '/assets/photos/avatar.webp',
+} = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+    <title>{title}</title>
+    <link rel="icon" href="/assets/photos/avatar.webp" />
+    <ClientRouter />
+  </head>
+  <body class="bg-background text-white font-sans antialiased">
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress" class="fixed top-0 left-0 h-[2px] z-[100] w-0 transition-none"
+         style="background: linear-gradient(90deg, #00B4D8, #6366f1);"></div>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --cyan: #00B4D8;
+    --indigo: #6366f1;
+    --bg: #080810;
+  }
+
+  html { background-color: var(--bg); }
+
+  ::selection { background: var(--cyan); color: #000; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #080810; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00B4D8, #6366f1); border-radius: 2px; }
+
+  /* Glass card */
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  }
+  .glass:hover {
+    border-color: rgba(0,180,216,0.25);
+    box-shadow: 0 0 32px rgba(0,180,216,0.08), 0 8px 32px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Gradient text utility */
+  .grad-text {
+    background: linear-gradient(135deg, #00B4D8 0%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Eyebrow label above section headings */
+  .eyebrow {
+    font-size: clamp(0.65rem, 0.9vw, 0.75rem);
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #00B4D8;
+    opacity: 0.8;
+  }
+
+  /* Section heading standard */
+  .section-title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  /* Ambient glow blobs behind sections */
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const bar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    if (bar) bar.style.width = pct + '%';
+  }, { passive: true });
+</script>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" rx="12" fill="#0d1117"/>
+
+  <!-- Grid lines -->
+  <line x1="0" y1="100" x2="600" y2="100" stroke="#ffffff08" stroke-width="1"/>
+  <line x1="0" y1="200" x2="600" y2="200" stroke="#ffffff08" stroke-width="1"/>
+  <line x1="0" y1="300" x2="600" y2="300" stroke="#ffffff08" stroke-width="1"/>
+  <line x1="150" y1="0" x2="150" y2="400" stroke="#ffffff08" stroke-width="1"/>
+  <line x1="300" y1="0" x2="300" y2="400" stroke="#ffffff08" stroke-width="1"/>
+  <line x1="450" y1="0" x2="450" y2="400" stroke="#ffffff08" stroke-width="1"/>
+
+  <!-- Header -->
+  <text x="30" y="42" font-family="monospace" font-size="18" font-weight="bold" fill="#00B4D8">&#x26A1; platform-skills</text>
+  <text x="30" y="64" font-family="monospace" font-size="11" fill="#ffffff40">Claude Code · Production patterns</text>
+
+  <!-- Tag pills -->
+  <rect x="30" y="82" width="88" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="74" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">Kubernetes</text>
+
+  <rect x="126" y="82" width="72" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="162" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">Terraform</text>
+
+  <rect x="206" y="82" width="56" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="234" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">GitOps</text>
+
+  <rect x="270" y="82" width="60" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="300" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">Linkerd</text>
+
+  <rect x="338" y="82" width="40" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="358" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">OPA</text>
+
+  <rect x="386" y="82" width="64" height="22" rx="11" fill="#00B4D820" stroke="#00B4D840"/>
+  <text x="418" y="97" text-anchor="middle" font-family="monospace" font-size="10" fill="#00B4D8">Kyverno</text>
+
+  <!-- Domain cards row 1 -->
+  <rect x="30" y="130" width="164" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="50" y="156" font-family="monospace" font-size="11" fill="#00B4D8">&#x2699;  Platform</text>
+  <text x="50" y="174" font-family="monospace" font-size="10" fill="#ffffff50">EKS · OpenShift · FluxCD</text>
+  <text x="50" y="190" font-family="monospace" font-size="10" fill="#ffffff50">KEDA · Linkerd</text>
+
+  <rect x="210" y="130" width="164" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="230" y="156" font-family="monospace" font-size="11" fill="#00B4D8">&#x1F501;  CI/CD</text>
+  <text x="230" y="174" font-family="monospace" font-size="10" fill="#ffffff50">GitHub Actions · FluxCD</text>
+  <text x="230" y="190" font-family="monospace" font-size="10" fill="#ffffff50">Doppler · GitOps</text>
+
+  <rect x="390" y="130" width="180" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="410" y="156" font-family="monospace" font-size="11" fill="#00B4D8">&#x1F3E2;  Landing Zones</text>
+  <text x="410" y="174" font-family="monospace" font-size="10" fill="#ffffff50">AWS · Azure · Terraform</text>
+  <text x="410" y="190" font-family="monospace" font-size="10" fill="#ffffff50">Control Tower · SCPs</text>
+
+  <!-- Domain cards row 2 -->
+  <rect x="30" y="220" width="164" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="50" y="246" font-family="monospace" font-size="11" fill="#6366f1">&#x1F6E1;  Policy as Code</text>
+  <text x="50" y="264" font-family="monospace" font-size="10" fill="#ffffff50">OPA · Kyverno</text>
+  <text x="50" y="280" font-family="monospace" font-size="10" fill="#ffffff50">Gatekeeper</text>
+
+  <rect x="210" y="220" width="164" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="230" y="246" font-family="monospace" font-size="11" fill="#6366f1">&#x1F4E1;  Observability</text>
+  <text x="230" y="264" font-family="monospace" font-size="10" fill="#ffffff50">Datadog · Dynatrace</text>
+  <text x="230" y="280" font-family="monospace" font-size="10" fill="#ffffff50">SLOs · Tracing</text>
+
+  <rect x="390" y="220" width="180" height="70" rx="8" fill="#ffffff05" stroke="#ffffff12"/>
+  <text x="410" y="246" font-family="monospace" font-size="11" fill="#6366f1">&#x1F916;  AI x Platform</text>
+  <text x="410" y="264" font-family="monospace" font-size="10" fill="#ffffff50">Claude Code skills</text>
+  <text x="410" y="280" font-family="monospace" font-size="10" fill="#ffffff50">LLM ops in production</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="360" width="600" height="40" fill="#00B4D808"/>
+  <line x1="0" y1="360" x2="600" y2="360" stroke="#00B4D820" stroke-width="1"/>
+  <text x="30" y="385" font-family="monospace" font-size="11" fill="#ffffff30">github.com/nitinjain999/platform-skills</text>
+  <text x="570" y="385" text-anchor="end" font-family="monospace" font-size="11" fill="#00B4D860">&#x2192;</text>
+</svg>

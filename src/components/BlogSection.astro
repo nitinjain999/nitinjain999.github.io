@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+<section id="blog" class="relative py-28 px-6">
+  <div class="glow-blob w-80 h-80 bg-cyan/8 top-0 right-1/4" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 blog-eyebrow">Writing</p>
+      <h2 class="section-title text-white mb-4 opacity-0 blog-heading">From the Trenches</h2>
+      <p class="text-white/40 text-base opacity-0 blog-sub">Platform engineering, documented in the open.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      {posts.map((post) => (
+        <a href={`/blog/${post.id}`}
+           class="blog-card opacity-0 group flex flex-col rounded-2xl border border-white/6 bg-white/[0.025] p-6 hover:border-cyan/20 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden">
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {post.data.tags.slice(0, 3).map(tag => (
+              <span class="text-[10px] font-mono px-2 py-0.5 bg-cyan/8 text-cyan/70 border border-cyan/15 rounded-full">{tag}</span>
+            ))}
+            {post.data.tags.length > 3 && (
+              <span class="text-[10px] font-mono px-2 py-0.5 bg-white/5 text-white/30 border border-white/10 rounded-full">+{post.data.tags.length - 3}</span>
+            )}
+          </div>
+          <h3 class="font-bold text-white text-base leading-snug mb-3 group-hover:text-cyan transition-colors flex-1 line-clamp-2">{post.data.title}</h3>
+          <p class="text-white/40 text-sm leading-relaxed mb-4 line-clamp-3">{post.data.description}</p>
+          <div class="text-[10px] text-white/25 font-mono mt-auto">
+            {post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="text-center blog-link opacity-0">
+      <a href="/blog" class="inline-flex items-center gap-2 text-cyan/70 text-sm font-medium hover:text-cyan transition-colors">
+        View all posts
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#blog', start: 'top 78%' };
+      gsap.fromTo('.blog-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.blog-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.blog-sub',     { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1,  scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.blog-card'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.55, stagger: 0.1, scrollTrigger: { trigger: '#blog', start: 'top 74%' } }
+      );
+      gsap.fromTo('.blog-link', { opacity: 0 }, { opacity: 1, duration: 0.5, scrollTrigger: { trigger: '#blog', start: 'top 68%' } });
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

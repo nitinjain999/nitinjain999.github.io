@@ -1,0 +1,144 @@
+---
+const platformSkillsTags = ['Kubernetes', 'Terraform', 'GitOps', 'KEDA', 'Linkerd', 'OPA', 'Kyverno'];
+
+const GITHUB_USER = 'nitinjain999';
+const REPOS = [
+  { repo: 'integrations/terraform-provider-github', label: 'terraform-provider-github' },
+  { repo: 'hashicorp/terraform-provider-aws',        label: 'terraform-provider-aws' },
+];
+
+async function fetchPRs(repo: string) {
+  try {
+    const headers: Record<string, string> = { 'Accept': 'application/vnd.github+json' };
+    if (import.meta.env.GITHUB_TOKEN) headers['Authorization'] = `Bearer ${import.meta.env.GITHUB_TOKEN}`;
+
+    const url = `https://api.github.com/search/issues?q=author:${GITHUB_USER}+repo:${repo}+type:pr&per_page=10&sort=created&order=desc`;
+    const res = await fetch(url, { headers });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.items ?? []).map((pr: any) => ({
+      number: pr.number,
+      title:  pr.title,
+      url:    pr.html_url,
+      state:  pr.pull_request?.merged_at ? 'merged' : pr.state,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const contributions = await Promise.all(
+  REPOS.map(async ({ repo, label }) => ({
+    repo: label,
+    repoUrl: `https://github.com/${repo}`,
+    prs: await fetchPRs(repo),
+  }))
+);
+---
+
+<section id="opensource" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-96 h-80 bg-indigo/10 top-0 left-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 os-eyebrow">Open Source</p>
+      <h2 class="section-title text-white opacity-0 os-heading">Built in the Open</h2>
+    </div>
+
+    <!-- platform-skills project -->
+    <div class="os-card opacity-0 rounded-2xl border border-white/7 bg-white/[0.025] overflow-hidden mb-6">
+      <div class="grid md:grid-cols-2 gap-0">
+        <div class="p-8 md:p-12 flex flex-col justify-center">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-cyan/10 border border-cyan/20 flex items-center justify-center text-sm">⚡</div>
+            <h3 class="text-xl font-bold text-white tracking-tight">platform-skills</h3>
+          </div>
+          <p class="text-white/55 leading-relaxed mb-6 text-sm">
+            A Claude Code skill that encodes real-world platform patterns across Kubernetes, Terraform,
+            GitOps, KEDA, Linkerd, OPA and Kyverno — drawn from production incidents, not documentation.
+            Most AI assistants give advice that would get you paged at 3am. This one won't.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-7">
+            {platformSkillsTags.map(tag => (
+              <span class="px-2.5 py-1 text-[10px] font-mono bg-cyan/6 text-cyan/70 border border-cyan/15 rounded-full">{tag}</span>
+            ))}
+          </div>
+          <a href="https://github.com/nitinjain999/platform-skills"
+             target="_blank" rel="noopener noreferrer"
+             class="self-start inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-black transition-all duration-200 hover:scale-105 active:scale-95"
+             style="background: linear-gradient(135deg, #00B4D8, #6366f1);">
+            View on GitHub
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="border-t md:border-t-0 md:border-l border-white/6 bg-black/20 flex items-center justify-center p-4">
+          <img src="/assets/keda-architecture.svg" alt="platform-skills diagram"
+               class="w-full h-auto rounded-lg" loading="lazy" width="600" height="400" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Live OSS contributions -->
+    <div class="os-contribs opacity-0 grid md:grid-cols-2 gap-5">
+      {contributions.map(contrib => (
+        <div class="rounded-2xl border border-white/7 bg-white/[0.025] p-6">
+          <a href={contrib.repoUrl} target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-2 text-xs font-mono text-white/40 hover:text-cyan transition-colors mb-5">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            {contrib.repo}
+          </a>
+
+          {contrib.prs.length === 0 ? (
+            <a href={contrib.repoUrl} target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 text-xs text-cyan/60 hover:text-cyan transition-colors font-mono mt-2">
+              View contributions on GitHub →
+            </a>
+          ) : (
+            <ul class="space-y-3">
+              {contrib.prs.map(pr => (
+                <li>
+                  <a href={pr.url} target="_blank" rel="noopener noreferrer"
+                     class="group flex items-start gap-3 hover:bg-white/[0.03] rounded-lg p-2 -mx-2 transition-colors">
+                    <span class={`flex-shrink-0 mt-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                      pr.state === 'merged'
+                        ? 'bg-indigo/10 text-indigo/80 border-indigo/20'
+                        : 'bg-cyan/8 text-cyan/70 border-cyan/20'
+                    }`}>
+                      #{pr.number}
+                    </span>
+                    <span class="text-white/55 text-xs leading-relaxed group-hover:text-white/80 transition-colors line-clamp-2">
+                      {pr.title}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#opensource', start: 'top 80%' };
+      gsap.fromTo('.os-eyebrow',  { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.os-heading',  { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.os-card',     { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: { trigger: '#opensource', start: 'top 75%' } });
+      gsap.fromTo('.os-contribs', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.1, scrollTrigger: { trigger: '#opensource', start: 'top 70%' } });
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

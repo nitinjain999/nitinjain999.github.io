@@ -1,0 +1,148 @@
+---
+---
+<section id="contact" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-[500px] h-[400px] bg-cyan/8 -bottom-20 right-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-3xl mx-auto">
+    <div class="contact-card opacity-0 relative overflow-hidden rounded-3xl border border-white/8 bg-white/[0.03] p-10 md:p-14">
+      <!-- Gradient border shimmer -->
+      <div class="absolute inset-0 rounded-3xl pointer-events-none"
+           style="background: linear-gradient(135deg, rgba(0,180,216,0.06) 0%, transparent 50%, rgba(99,102,241,0.06) 100%);"></div>
+
+      <div class="text-center mb-10">
+        <p class="eyebrow mb-4">Let's work together</p>
+        <h2 class="section-title mb-5">
+          Have a platform <span class="grad-text">challenge?</span>
+        </h2>
+        <p class="text-white/50 leading-relaxed max-w-lg mx-auto text-base">
+          Most cloud platforms are unnecessarily complex. Manual processes, undocumented
+          systems, 3am alerts — that's an engineering failure, not bad luck. I fix it.
+          EKS, Terraform, GitOps, security, architecture. Hard problems only.
+        </p>
+      </div>
+
+      <!-- Contact form — powered by Web3Forms -->
+      <!-- Replace YOUR_ACCESS_KEY with the key emailed to you from web3forms.com -->
+      <form id="contact-form"
+            action="https://api.web3forms.com/submit"
+            method="POST"
+            class="space-y-4 text-left">
+
+        <input type="hidden" name="access_key" value="ca1827cc-b7b0-45cd-9177-e53cb4042c5a" />
+        <input type="hidden" name="subject" value="New message from nitinjain999.github.io" />
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none;" />
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label for="contact-name" class="block text-xs font-mono text-white/40 mb-2 tracking-wider uppercase">Name</label>
+            <input id="contact-name" type="text" name="name" required
+                   placeholder="Your name"
+                   class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan/40 focus:bg-white/[0.06] transition-all duration-200" />
+          </div>
+          <div>
+            <label for="contact-email" class="block text-xs font-mono text-white/40 mb-2 tracking-wider uppercase">Email</label>
+            <input id="contact-email" type="email" name="email" required
+                   placeholder="you@company.com"
+                   class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan/40 focus:bg-white/[0.06] transition-all duration-200" />
+          </div>
+        </div>
+
+        <div>
+          <label for="contact-subject" class="block text-xs font-mono text-white/40 mb-2 tracking-wider uppercase">What's the problem?</label>
+          <input id="contact-subject" type="text" name="topic"
+                 placeholder="EKS migration, Terraform refactor, platform strategy..."
+                 class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan/40 focus:bg-white/[0.06] transition-all duration-200" />
+        </div>
+
+        <div>
+          <label for="contact-message" class="block text-xs font-mono text-white/40 mb-2 tracking-wider uppercase">Details</label>
+          <textarea id="contact-message" name="message" required rows="4"
+                    placeholder="Tell me about your platform, the problem, and what you've tried..."
+                    class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan/40 focus:bg-white/[0.06] transition-all duration-200 resize-none"></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
+          <button type="submit" id="contact-submit"
+                  class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-semibold text-sm text-black transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  style="background: linear-gradient(135deg, #00B4D8, #6366f1);">
+            <span id="submit-label">Send message</span>
+            <svg id="submit-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p id="form-status" class="text-sm font-mono"></p>
+        </div>
+      </form>
+
+    </div>
+
+    <div class="mt-14 pt-8 border-t border-white/6 flex flex-col md:flex-row justify-between items-center gap-4 text-white/30 text-xs font-mono">
+      <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center md:justify-start items-center">
+        <span>📍 Stockholm, Sweden</span>
+        <a href="mailto:nitin.solna@gmail.com" class="hover:text-cyan transition-colors">nitin.solna@gmail.com</a>
+        <a href="tel:+46730787990"             class="hover:text-cyan transition-colors">+46 730 787 990</a>
+        <a href="https://github.com/nitinjain999" target="_blank" rel="noopener" class="hover:text-cyan transition-colors">GitHub</a>
+        <a href="https://www.linkedin.com/in/nitinjain999/" target="_blank" rel="noopener" class="hover:text-cyan transition-colors">LinkedIn</a>
+      </div>
+      <span class="flex-shrink-0">© 2026 Nitin Jain</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.fromTo('.contact-card',
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.7, scrollTrigger: { trigger: '#contact', start: 'top 80%' } });
+    });
+
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const submit = document.getElementById('contact-submit') as HTMLButtonElement | null;
+    const label = document.getElementById('submit-label');
+    const icon = document.getElementById('submit-icon');
+    const status = document.getElementById('form-status');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!submit || !label || !status) return;
+
+      submit.disabled = true;
+      label.textContent = 'Sending…';
+      if (icon) icon.style.display = 'none';
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          form.reset();
+          label.textContent = 'Sent!';
+          status.textContent = 'Message received. I will get back to you shortly.';
+          status.className = 'text-sm font-mono text-cyan/80';
+        } else {
+          throw new Error('non-ok');
+        }
+      } catch {
+        label.textContent = 'Send message';
+        if (icon) icon.style.display = '';
+        submit.disabled = false;
+        status.textContent = 'Something went wrong. Try emailing nitin.solna@gmail.com directly.';
+        status.className = 'text-sm font-mono text-red-400/80';
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

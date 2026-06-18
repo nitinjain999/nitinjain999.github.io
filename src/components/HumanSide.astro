@@ -1,0 +1,107 @@
+---
+const photos = [
+  { src: 'travel-dubai-quad',        alt: 'Quad biking in the Dubai desert',   caption: 'Dubai, UAE' },
+  { src: 'travel-stockholm-harbor',  alt: 'Stockholm frozen harbor in winter', caption: 'Stockholm, Sweden' },
+  { src: 'travel-geneva',            alt: 'Lake Geneva with Swiss flag',        caption: 'Geneva, Switzerland' },
+  { src: 'travel-moscow',            alt: 'Moscow river cruise',                caption: 'Moscow, Russia' },
+  { src: 'travel-alps',              alt: 'Swiss Alps at Jungfrau',             caption: 'Jungfrau, Switzerland' },
+  { src: 'travel-riyadh',            alt: 'Riyadh skyline at night',            caption: 'Riyadh, Saudi Arabia' },
+  { src: 'travel-rockies',           alt: 'Canadian Rockies in the mist',       caption: 'Canadian Rockies' },
+  { src: 'travel-mountains2',        alt: 'Mountain landscape',                 caption: 'On the road' },
+];
+
+const cards = [
+  {
+    icon: '🎾',
+    title: 'Padel Player',
+    text: 'On the court when I\'m not on the terminal. Padel is chess at pace — angles, partnerships, controlled aggression. Sounds familiar.',
+  },
+  {
+    icon: '🌍',
+    title: 'Compulsive Traveller',
+    text: 'Stockholm is home. Dubai, Geneva, Riyadh, Moscow, the Rockies — the list keeps growing. Every city teaches you something a Confluence page never will.',
+  },
+  {
+    icon: '🏏',
+    title: 'Cricket Lover',
+    text: 'Grew up watching India bat. Still do. Test cricket is the only format that respects patience — the rarest skill in both engineering and sport.',
+  },
+  {
+    icon: '💬',
+    title: 'Always Up for a Chat',
+    text: 'Platform war stories, career pivots, cloud bills gone wrong, padel tactics — I\'m always open for a conversation. Drop a message.',
+  },
+];
+---
+<section id="human" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-96 h-80 bg-indigo/8 bottom-0 left-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 human-eyebrow">Life</p>
+      <h2 class="section-title text-white mb-4 opacity-0 human-heading">Beyond the Terminal</h2>
+      <p class="text-white/40 text-base opacity-0 human-sub">The person behind the platform.</p>
+    </div>
+
+    <!-- Photo wall — tight mosaic, no gaps, edge-to-edge -->
+    <div class="grid grid-cols-4 md:grid-cols-8 mb-16 rounded-2xl overflow-hidden">
+      {photos.map((photo) => (
+        <div class="photo-item opacity-0 relative group overflow-hidden aspect-square">
+          <picture>
+            <source srcset={`/assets/photos/${photo.src}.webp`} type="image/webp" />
+            <img src={`/assets/photos/${photo.src}.jpg`} alt={photo.alt}
+                 loading="lazy" width="200" height="200"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          </picture>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+            <span class="text-white text-[10px] font-mono leading-tight">{photo.caption}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Personality cards -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {cards.map((c) => (
+        <div class="statement-item opacity-0 rounded-2xl border border-white/6 bg-white/[0.025] p-6 hover:border-white/12 hover:bg-white/[0.04] transition-all duration-300">
+          <div class="text-3xl mb-4">{c.icon}</div>
+          <h3 class="text-white font-semibold text-base mb-2 tracking-tight">{c.title}</h3>
+          <p class="text-white/45 text-sm leading-relaxed">{c.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#human', start: 'top 78%' };
+      gsap.fromTo('.human-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.human-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.human-sub',     { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1,  scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.photo-item'),
+        { opacity: 0, scale: 0.93 },
+        { opacity: 1, scale: 1, duration: 0.5, stagger: 0.06,
+          scrollTrigger: { trigger: '#human', start: 'top 73%' } }
+      );
+      gsap.fromTo(
+        gsap.utils.toArray('.statement-item'),
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1,
+          scrollTrigger: { trigger: '#human', start: 'top 65%' } }
+      );
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>
