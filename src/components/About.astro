@@ -8,41 +8,120 @@ const stats = [
   { value: 100, suffix: 's', label: 'Engineers Served Daily' },
 ];
 ---
-<section id="about" class="py-24 px-6 max-w-6xl mx-auto">
-  <h2 class="about-heading text-3xl font-bold mb-16 text-center opacity-0">About</h2>
+<section id="about" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-[500px] h-[400px] bg-cyan/6 top-0 right-0" style="position:absolute;"></div>
 
-  <div class="grid md:grid-cols-2 gap-16 items-start">
-    <div class="about-left opacity-0 flex flex-col items-center md:items-start gap-8">
-      <img
-        src="/assets/photos/avatar.webp"
-        alt="Nitin Jain"
-        width="160"
-        height="160"
-        loading="eager"
-        class="w-40 h-40 rounded-full border-2 border-cyan/30 object-cover"
-      />
-      <div class="text-white/65 leading-relaxed space-y-4 text-center md:text-left">
-        <p>
-          Principal Platform Engineer based in Stockholm, Sweden — 15+ years building the
-          infrastructure that makes everyone else's work possible. Started in telecom at Ericsson,
-          moved through cloud at AWS, landed in platform engineering at scale, and never looked back.
-        </p>
-        <p>
-          My philosophy: if it's not in Git, it doesn't exist. If it's not automated, it's a future
-          incident waiting to happen. I've designed landing zones for 40+ AWS accounts, migrated
-          organisations onto EKS, and built the GitOps pipelines that hundreds of engineers ship on
-          every day — without a runbook in sight.
-        </p>
-        <p>
-          Outside of work, I'm co-founder and CTO of Favia IT Solutions AB — a company I run with
-          my wife. I believe in building things with the people you trust most.
-          Platforms at work. Companies at home.
-        </p>
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 about-eyebrow">About</p>
+      <h2 class="section-title text-white opacity-0 about-heading">The Engineer Behind the Platform</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-16 items-start mb-16">
+      <div class="about-left opacity-0 flex flex-col items-center md:items-start gap-8">
+        <div class="relative">
+          <div class="absolute -inset-0.5 rounded-full opacity-40"
+               style="background: linear-gradient(135deg, #00B4D8, #6366f1); filter: blur(8px);"></div>
+          <img src="/assets/photos/avatar.webp" alt="Nitin Jain"
+               width="160" height="160" loading="eager"
+               class="relative w-40 h-40 rounded-full border border-white/10 object-cover" />
+        </div>
+        <div class="text-white/55 leading-relaxed space-y-4 text-center md:text-left text-[15px]">
+          <p>
+            Principal Platform Engineer based in Stockholm, Sweden, with 15+ years building the
+            infrastructure that makes everyone else's work possible. The journey started in telecom
+            at Ericsson, moved through cloud and enterprise architecture at AWS, and landed in
+            platform engineering at scale. Each step built on the last, and the direction never changed.
+          </p>
+          <p>
+            Two principles drive everything: if it's not in Git, it doesn't exist, and if it's not
+            automated, it's a future incident waiting to happen. That mindset is behind 40+ AWS
+            landing zones, multiple EKS migrations, and GitOps pipelines that hundreds of engineers
+            ship on every day without ever touching a runbook.
+          </p>
+          <p class="text-cyan/80 font-mono text-sm">
+            Co-founder, Favia IT Solutions AB.
+          </p>
+        </div>
+      </div>
+
+      <div class="about-right opacity-0">
+        <StatCounters {stats} client:visible />
       </div>
     </div>
 
-    <div class="about-right opacity-0">
-      <StatCounters {stats} client:visible />
+    <!-- Cert badges — full width row, each linked to Credly for verification -->
+    <div class="about-badges opacity-0 pt-8 border-t border-white/6">
+      <p class="text-center text-xs font-mono text-white/25 tracking-widest uppercase mb-6">Certifications — click to verify</p>
+      <div class="flex flex-wrap justify-center items-end gap-6 md:gap-10">
+
+        <a href="https://www.credly.com/badges/7cf00e9d-1e4c-415a-aaf9-a46acb12e065/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-2 opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <img src="/assets/badges/aws-sa-associate.png" alt="AWS Certified Solutions Architect – Associate"
+               class="w-20 h-20 md:w-28 md:h-28 object-contain" />
+          <span class="text-[10px] font-mono text-white/30 group-hover:text-cyan/70 transition-colors text-center max-w-[90px] leading-tight">Solutions Architect Associate</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/8dba2993-6fd9-44e7-8397-6e8e6df86702/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-2 opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <img src="/assets/badges/aws-devops-pro.png" alt="AWS Certified DevOps Engineer – Professional"
+               class="w-20 h-20 md:w-28 md:h-28 object-contain" />
+          <span class="text-[10px] font-mono text-white/30 group-hover:text-cyan/70 transition-colors text-center max-w-[90px] leading-tight">DevOps Engineer Professional</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/1f9d3678-3e1e-4603-8d50-f1e823597c1e/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-2 opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <img src="/assets/badges/aws-security-specialty.png" alt="AWS Certified Security – Specialty"
+               class="w-20 h-20 md:w-28 md:h-28 object-contain" />
+          <span class="text-[10px] font-mono text-white/30 group-hover:text-cyan/70 transition-colors text-center max-w-[90px] leading-tight">Security Specialty</span>
+        </a>
+
+        <a href="https://www.credly.com/badges/ef38a92a-2a80-43b3-9324-d0c07dfaa01c/public_url"
+           target="_blank" rel="noopener noreferrer"
+           class="group flex flex-col items-center gap-2 opacity-75 hover:opacity-100 hover:scale-105 transition-all duration-300">
+          <img src="/assets/badges/aws-partner-economics.png" alt="AWS Partner: Cloud Economics Essentials"
+               class="w-20 h-20 md:w-28 md:h-28 object-contain" />
+          <span class="text-[10px] font-mono text-white/30 group-hover:text-cyan/70 transition-colors text-center max-w-[90px] leading-tight">Cloud Economics Essentials</span>
+        </a>
+
+        <!-- Kubernetes — no Credly link, just logo + label -->
+        <div class="group flex flex-col items-center gap-2 opacity-60">
+          <div class="w-20 h-20 md:w-28 md:h-28 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" class="w-16 h-16 md:w-20 md:h-20">
+              <circle cx="24" cy="24" r="22" fill="#326CE5"/>
+              <path d="M24 7l3.2 9.6h10.1l-8.2 5.9 3.1 9.6L24 27.2l-8.2 5.9 3.1-9.6-8.2-5.9h10.1L24 7z" fill="white"/>
+              <circle cx="24" cy="24" r="4" fill="white"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-mono text-white/30 text-center max-w-[90px] leading-tight">Kubernetes KCM100</span>
+        </div>
+
+        <!-- Google Cloud -->
+        <div class="group flex flex-col items-center gap-2 opacity-60">
+          <div class="w-20 h-20 md:w-28 md:h-28 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" class="w-16 h-16 md:w-20 md:h-20">
+              <path d="M30 13H18L6 24l12 11h12l12-11L30 13z" fill="#4285F4"/>
+              <path d="M24 17l-7 7 7 7 7-7-7-7z" fill="white"/>
+              <circle cx="24" cy="24" r="3.5" fill="#4285F4"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-mono text-white/30 text-center max-w-[90px] leading-tight">GCP Professional Cloud Architect</span>
+        </div>
+
+        <!-- Azure -->
+        <div class="group flex flex-col items-center gap-2 opacity-60">
+          <div class="w-20 h-20 md:w-28 md:h-28 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" class="w-16 h-16 md:w-20 md:h-20">
+              <path d="M21 5L9 34h9.5l5-12 10.5 21H10l-4.5 7h37L21 5z" fill="#0078D4"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-mono text-white/30 text-center max-w-[90px] leading-tight">Azure Infrastructure Exam 533</span>
+        </div>
+
+      </div>
     </div>
   </div>
 </section>
@@ -58,9 +137,11 @@ const stats = [
     ctx = gsap.context(() => {
       gsap.registerPlugin(ScrollTrigger);
       const st = { trigger: '#about', start: 'top 75%' };
-      gsap.fromTo('.about-heading', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { ...st, start: 'top 80%' } });
-      gsap.fromTo('.about-left',   { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, scrollTrigger: st });
-      gsap.fromTo('.about-right',  { opacity: 0, x: 40  }, { opacity: 1, x: 0, duration: 0.8, delay: 0.15, scrollTrigger: st });
+      gsap.fromTo('.about-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.about-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: { ...st, start: 'top 80%' } });
+      gsap.fromTo('.about-left',    { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, scrollTrigger: st });
+      gsap.fromTo('.about-right',   { opacity: 0, x: 40  }, { opacity: 1, x: 0, duration: 0.8, delay: 0.15, scrollTrigger: st });
+      gsap.fromTo('.about-badges',  { opacity: 0, y: 30  }, { opacity: 1, y: 0, duration: 0.7, delay: 0.3, scrollTrigger: st });
     });
   }
 
