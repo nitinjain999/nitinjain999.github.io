@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="Writing — Nitin Jain" description="Platform engineering articles by Nitin Jain.">
+  <main class="max-w-3xl mx-auto px-6 py-24">
+    <a href="/" class="text-cyan text-sm font-mono hover:underline mb-8 inline-block">← Home</a>
+    <h1 class="text-4xl font-extrabold mb-12">Writing</h1>
+    <div class="space-y-6">
+      {posts.map(post => (
+        <a href={`/blog/${post.id}`} class="glass p-6 flex flex-col gap-2 group block">
+          <div class="flex flex-wrap gap-2">
+            {post.data.tags.slice(0, 3).map(tag => (
+              <span class="text-xs font-mono px-2 py-0.5 bg-cyan/10 text-cyan border border-cyan/20 rounded">{tag}</span>
+            ))}
+          </div>
+          <h2 class="font-bold text-white group-hover:text-cyan transition-colors">{post.data.title}</h2>
+          <p class="text-white/50 text-sm">{post.data.description}</p>
+          <span class="text-xs text-white/30 font-mono">
+            {post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
+        </a>
+      ))}
+    </div>
+  </main>
+</Base>

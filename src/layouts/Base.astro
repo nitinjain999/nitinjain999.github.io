@@ -7,7 +7,7 @@ import '@fontsource/inter/800.css';
 import '@fontsource/fira-code/400.css';
 import '@fontsource/fira-code/500.css';
 import '../styles/global.css';
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -42,7 +42,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <title>{title}</title>
     <link rel="icon" href="/assets/photos/avatar.webp" />
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body class="bg-background text-white font-sans antialiased">
     <!-- Scroll progress bar -->
