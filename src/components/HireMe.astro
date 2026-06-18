@@ -1,0 +1,63 @@
+---
+const services = [
+  { icon: '☸️',  title: 'EKS Modernisation',          desc: 'Cluster design, migration, networking, RBAC, and day-2 operations.' },
+  { icon: '🏗️', title: 'Terraform Module Design',      desc: 'Reusable, versioned modules for cloud foundations and platform components.' },
+  { icon: '🔁',  title: 'GitOps Adoption',              desc: 'FluxCD or ArgoCD rollout, repo structure, promotion workflows, and team enablement.' },
+  { icon: '🏢',  title: 'AWS Landing Zones',            desc: 'Multi-account foundations with IAM, networking, logging, and guardrails.' },
+  { icon: '💰',  title: 'FinOps',                       desc: 'Cost visibility, rightsizing, tagging strategy, and Savings Plans advisory.' },
+  { icon: '🔧',  title: 'GitHub Actions Platform',      desc: 'Reusable workflows, composite actions, self-hosted runners, and CI/CD governance.' },
+  { icon: '🛡️', title: 'Policy-as-Code',               desc: 'OPA, Kyverno, or Gatekeeper. Admission policies enforced at the platform layer.' },
+  { icon: '📡',  title: 'Observability',                desc: 'SLOs, distributed tracing, log pipelines, and dashboards on Datadog or Dynatrace.' },
+  { icon: '🤖',  title: 'AI-Assisted Platform Automation', desc: 'Claude Code agent skills, LLM ops integration, and AI-driven platform workflows.' },
+];
+---
+<section id="hireme" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-[500px] h-96 bg-indigo/8 bottom-0 right-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 hire-eyebrow">Services</p>
+      <h2 class="section-title text-white mb-4 opacity-0 hire-heading">What I Can Help With</h2>
+      <p class="text-white/40 text-base max-w-lg mx-auto opacity-0 hire-sub">
+        Select engagements only. Hard problems preferred.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {services.map((s) => (
+        <div class="hire-card opacity-0 flex gap-4 items-start p-5 rounded-2xl border border-white/6 bg-white/[0.025] hover:border-cyan/20 hover:bg-white/[0.04] transition-all duration-300">
+          <span class="text-2xl flex-shrink-0 mt-0.5">{s.icon}</span>
+          <div>
+            <h3 class="font-semibold text-white text-sm mb-1 tracking-tight">{s.title}</h3>
+            <p class="text-white/40 text-xs leading-relaxed">{s.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#hireme', start: 'top 78%' };
+      gsap.fromTo('.hire-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.hire-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.hire-sub',     { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.hire-card'),
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.06, scrollTrigger: { trigger: '#hireme', start: 'top 72%' } }
+      );
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

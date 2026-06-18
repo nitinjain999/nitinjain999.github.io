@@ -1,0 +1,82 @@
+---
+const impacts = [
+  {
+    metric: '60+',
+    title: 'AWS Landing Zones',
+    desc: 'Secure, repeatable account foundations built across enterprise and scale-up environments. Covering networking, IAM, logging, and governance.',
+  },
+  {
+    metric: '×3',
+    title: 'EKS Migrations',
+    desc: 'Multiple production Kubernetes migrations and modernisation initiatives delivered. From legacy on-prem and OpenShift to managed EKS at scale.',
+  },
+  {
+    metric: '100%',
+    title: 'GitOps Adoption',
+    desc: 'Git as the single source of truth for cluster state. Engineering teams shipping safely without manual runbooks or kubectl applies in production.',
+  },
+  {
+    metric: '∞',
+    title: 'Reusable Terraform Modules',
+    desc: 'Module library covering cloud foundations, API Gateway, GitHub governance, observability stacks, and Kubernetes platforms. Built once, used everywhere.',
+  },
+  {
+    metric: 'Day 1',
+    title: 'Observability & FinOps Built In',
+    desc: 'Cost visibility, SLOs, distributed tracing, and policy-as-code embedded into the platform from the start. Not bolted on after incidents.',
+  },
+  {
+    metric: '100s',
+    title: 'Engineers Unblocked',
+    desc: 'Golden paths and self-service platforms that let product teams move fast without needing a platform ticket or a runbook for every deployment.',
+  },
+];
+---
+<section id="impact" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-[500px] h-[400px] bg-indigo/8 top-0 left-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 impact-eyebrow">Outcomes</p>
+      <h2 class="section-title text-white mb-4 opacity-0 impact-heading">Selected Impact</h2>
+      <p class="text-white/40 text-base max-w-xl mx-auto opacity-0 impact-sub">
+        Tools are means. These are the ends.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {impacts.map((item) => (
+        <div class="impact-card opacity-0 group relative p-6 rounded-2xl border border-white/6 bg-white/[0.025] hover:border-cyan/20 hover:bg-white/[0.04] transition-all duration-300">
+          <div class="text-3xl font-extrabold text-cyan mb-3 font-mono">{item.metric}</div>
+          <h3 class="font-semibold text-white text-base mb-2 tracking-tight">{item.title}</h3>
+          <p class="text-white/45 text-sm leading-relaxed">{item.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#impact', start: 'top 78%' };
+      gsap.fromTo('.impact-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.impact-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo('.impact-sub',     { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.1, scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.impact-card'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, scrollTrigger: { trigger: '#impact', start: 'top 72%' } }
+      );
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

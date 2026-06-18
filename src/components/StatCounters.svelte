@@ -6,14 +6,18 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Plain array — bind:this populates it without triggering $effect re-runs.
   let refs: HTMLSpanElement[] = [];
 
   $effect(() => {
     const triggers: ReturnType<typeof ScrollTrigger.create>[] = [];
     refs.forEach((el, i) => {
       if (!el) return;
-      const target = stats[i].value;
+      const stat = stats[i];
+      if (stat.display) {
+        el.textContent = stat.display;
+        return;
+      }
+      const target = stat.value;
       const isDecimal = target % 1 !== 0;
       triggers.push(ScrollTrigger.create({
         trigger: el,
@@ -40,7 +44,7 @@
   {#each stats as stat, i}
     <div class="glass p-6 text-center">
       <div class="text-4xl font-extrabold text-cyan mb-2">
-        <span bind:this={refs[i]}>0</span>{stat.suffix}
+        <span bind:this={refs[i]}>{stat.display ?? '0'}</span>{stat.display ? '' : stat.suffix}
       </div>
       <div class="text-sm text-white/50">{stat.label}</div>
     </div>

@@ -1,0 +1,53 @@
+---
+const principles = [
+  { num: '01', text: 'Git is the source of truth. If it is not in version control, it does not exist.' },
+  { num: '02', text: 'Automation beats documentation-only operations. Runbooks rot. Code does not.' },
+  { num: '03', text: 'Security should be default, not optional. The platform enforces it so teams do not have to think about it.' },
+  { num: '04', text: 'Golden paths make the right thing the easy thing. Developers take the path of least resistance. Make sure that path is correct.' },
+  { num: '05', text: 'Observability starts before production. If you cannot see it, you cannot fix it.' },
+  { num: '06', text: 'Cost is an engineering signal. FinOps is a platform responsibility, not a finance spreadsheet.' },
+];
+---
+<section id="principles" class="relative py-28 px-6 overflow-hidden">
+  <div class="glow-blob w-96 h-96 bg-cyan/6 top-1/2 right-0" style="position:absolute;"></div>
+
+  <div class="relative max-w-4xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="eyebrow mb-3 opacity-0 prin-eyebrow">Philosophy</p>
+      <h2 class="section-title text-white opacity-0 prin-heading">Platform Principles</h2>
+    </div>
+
+    <div class="space-y-4">
+      {principles.map((p) => (
+        <div class="prin-item opacity-0 flex gap-6 items-start p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:border-cyan/15 hover:bg-white/[0.03] transition-all duration-300">
+          <span class="text-xs font-mono text-cyan/40 mt-0.5 flex-shrink-0 w-6">{p.num}</span>
+          <p class="text-white/65 text-sm leading-relaxed">{p.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let ctx: gsap.Context | undefined;
+
+  function init() {
+    ctx?.revert();
+    ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: '#principles', start: 'top 78%' };
+      gsap.fromTo('.prin-eyebrow', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, scrollTrigger: st });
+      gsap.fromTo('.prin-heading', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.05, scrollTrigger: st });
+      gsap.fromTo(
+        gsap.utils.toArray('.prin-item'),
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.5, stagger: 0.08, scrollTrigger: { trigger: '#principles', start: 'top 72%' } }
+      );
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>
